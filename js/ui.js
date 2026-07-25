@@ -49,7 +49,9 @@ window.PERF_RENDER_DECORATORS = Object.assign({
 }, window.PERF_RENDER_DECORATORS || {});
 
 window.ARTWORK_PROXY_BASE = window.ARTWORK_PROXY_BASE === undefined
-    ? 'http://127.0.0.1:8787'
+    ? (window.location && (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+        ? window.location.origin + '/api'
+        : 'http://127.0.0.1:8787')
     : window.ARTWORK_PROXY_BASE;
 window.DEBUG_ART_GRADIENT = window.DEBUG_ART_GRADIENT === undefined
     ? true
