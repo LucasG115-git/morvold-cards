@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script>
+    const GA_MEASUREMENT_ID = '%GA_MEASUREMENT_ID%';
+    if (GA_MEASUREMENT_ID) {
+        (function() {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', GA_MEASUREMENT_ID, { anonymize_ip: true });
+        })();
+    }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A free browser-based tool for designing and generating custom creature cards for tabletop RPGs. Build your monsters, customise their stats, and export print-ready cards.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Creature Card Generator">
+    <meta property="og:description" content="A free browser-based tool for designing and generating custom creature cards for tabletop RPGs. Build your monsters, customise their stats, and export print-ready cards.">
+    <title>Creature Card Generator</title>
+    <!-- Library: math.js -->
+    <script type="text/javascript" src="lib/math/math.15.0.0.min.js" charset="utf-8"></script>
+    <script>math.config({number:'BigNumber'})</script>
+    <!-- Library: jQuery -->
+    <script type="text/javascript" src="lib/jquery/jquery.min.js" charset="utf-8"></script>
+    <!-- Library: Bootstrap -->
+    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap-theme.min.css" />
+    <!-- Library: Bootstrap typeahead -->
+    <script type="text/javascript" src="lib/typeahead/bootstrap3-typeahead.min.js" charset="utf-8"></script>
+    <!-- Library: Color picker -->
+    <link href="lib/colorpicker/css/bootstrap-colorselector.css" rel="stylesheet" />
+    <script type="text/javascript" src="lib/colorpicker/js/bootstrap-colorselector.js" charset="utf-8"></script>
+    <!-- Library: DOMPurify -->
+    <script type="text/javascript" src="lib/dompurify/purify.min.js" charset="utf-8"></script>
+    <!-- Export-only dependencies are lazy-loaded by js/ui.js -->
+    <!-- Data -->
+    <script type="text/javascript" src="data/card_data_example.js"></script>
+    <!-- Javascript -->
+    <script type="text/javascript" src="js/index-and-output.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/fields/field.js"></script>
+    <script type="text/javascript" src="js/fields/fields_utils.js"></script>
+    <script type="text/javascript" src="js/fields/fields_file.js"></script>
+    <script type="text/javascript" src="js/fields/fields_deck.js"></script>
+    <script type="text/javascript" src="js/fields/fields_page.js"></script>
+    <script type="text/javascript" src="js/fields/fields_default.js"></script>
+    <script type="text/javascript" src="js/fields/fields_card.js?v=npc30"></script>
+    <script type="text/javascript" src="js/monster-icon-data.js"></script>
+    <script type="text/javascript" src="js/cards.js?v=npc30"></script>
+    <script type="text/javascript" src="js/monster-computed.js"></script>
+    <script type="text/javascript" src="js/colors.js"></script>
+    <script type="text/javascript" src="js/icons.js"></script>
+    <script type="text/javascript" src="js/doc_parser.js"></script>
+    <script type="text/javascript" src="js/srd_data.js"></script>
+    <script type="text/javascript" src="js/srd-items.js?v=npc30"></script>
+    <script type="text/javascript" src="js/srd-items-data.js?v=npc30"></script>
+    <script type="text/javascript" src="js/item-art-data.js?v=npc30"></script>
+    <script type="text/javascript" src="js/srd-import.js?v=npc30"></script>
+    <script type="text/javascript" src="js/srd-items-library.js?v=npc30"></script>
+    <script type="text/javascript" src="js/jsonbuilder-import.js"></script>
+    <script type="text/javascript" src="js/card-lightbox.js"></script>
+    <script type="text/javascript" defer src="js/ui.js?v=npc30"></script>
+    <script type="text/javascript" defer src="js/autocomplete.js?v=npc30"></script>
+    <script type="text/javascript" defer src="js/redesign-modules.js?v=npc30"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap' rel='stylesheet'>
+    <link href="fonts/game-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Drawer flash-prevention: set class before first paint -->
+    <script>
+      if (localStorage.getItem('drawerOpen') !== 'false') {
+        document.documentElement.classList.add('drawer-open');
+      }
+    </script>
+    <!-- CSS -->
+    <link href="css/ui.css?v=npc30" rel="stylesheet" />
+    <link href="css/redesign.css?v=npc30" rel="stylesheet" />
+    <link href="css/cards.css?v=npc30" rel="stylesheet" />
+    <link href="css/card-size.css" rel="stylesheet" />
+    <link href="css/icons.css" rel="stylesheet" />
+    <link href="css/custom-icons.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Off-canvas sidebar drawer -->
+    <aside id="sidebar-drawer">
+
+                <div id="deck-section" class="sidebar-section">
+                    <h4 class="sidebar-section-title">Deck <button type="button" class="sidebar-tooltip-btn" onclick="openSidebarTooltip('deck')" title="About the Deck"><i class="fa-regular fa-circle-question"></i></button></h4>
+                                <form role="form" class="form-horizontal sidebar-deck-form">
+                                    <div class="deck-sidebar-main">
+                                    <div class="form-group">
+                                        <div class="col-sm-2">
+                                            <label for="deck-cards-list" class="control-label" style="width: 100%; margin-bottom: 1em;">Card</label>
+                                            <div>
+                                                <button type="button" class="move-button" title="Move to top" id="button-move-top">⏫</button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="move-button" title="Move up" id="button-move-up">🔼</button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="move-button" title="Move down" id="button-move-down">🔽</button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="move-button" title="Move to bottom" id="button-move-bottom">⏬</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <div class="input-group">
+                                                <input type="search" id="deck-cards-list-title-filter" class="form-control" placeholder="Search">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default search-clear-btn">
+                                                </span>
+                                            </div>
+                                            <div id="deck-cards-list" class="deck-cards-list"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10">
+                                            <div id="total-card-count">Deck contains 0 cards.</div>
+                                        </div>
+                                    </div>
+
+                                    </div>
+                                    <div class="deck-sidebar-actions">
+                                        <div class="sidebar-action-card">
+                                    <!-- ── Add Cards ── -->
+                                    <p class="sidebar-group-label">Add Cards <button type="button" class="sidebar-tooltip-btn" onclick="openSidebarTooltip('add-cards')" title="About Add Cards"><i class="fa-regular fa-circle-question"></i></button></p>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-12">
+                                            <button type="button" class="btn btn-block" id="button-add-card">Add New Card</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── Manage ── -->
+                                    <p class="sidebar-group-label">Manage <button type="button" class="sidebar-tooltip-btn" onclick="openSidebarTooltip('manage')" title="About Manage"><i class="fa-regular fa-circle-question"></i></button></p>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-duplicate-card">Duplicate</button>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-copy-card">Copy</button>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-copy-all">Copy all</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-paste-card">Paste</button>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-danger btn-block" id="button-delete-card">Delete</button>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <button type="button" class="btn btn-danger btn-block" id="button-clear">Delete all</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-12">
+                                            <div class="checkbox" style="padding: 2px 0 4px;">
+                                                <label>
+                                                    <input type="checkbox" checked id="ask-before-delete"> Ask before deleting
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── Import / Export ── -->
+                                    <p class="sidebar-group-label">Import / Export <button type="button" class="sidebar-tooltip-btn" onclick="openSidebarTooltip('import-export')" title="About Import / Export"><i class="fa-regular fa-circle-question"></i></button></p>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-12">
+                                            <button type="button" class="btn btn-block sidebar-import-btn" id="button-load">
+                                                <i class="fa-solid fa-file-arrow-up"></i> Import JSON
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="file-name" placeholder="File name" value="morvold_card_deck">
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary" id="button-save">Export JSON</button>
+                                                </span>
+                                            </div>
+                                            <a href="" id="file-save-link" style="display:none">Hidden download link</a>
+                                        </div>
+                                    </div>
+                                        </div>
+                                    </div>
+                                </form>
+                </div><!-- /#deck-section -->
+
+                    <!-- Page panel removed: content moved to Page Settings in column 2 -->
+
+
+                    <!-- TEMPORARILY HIDDEN: To show the Default panel again, remove the wrapper div with style="display:none" below (and its closing </div>). -->
+                    <div style="display:none">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingThree">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                    href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <!-- PANEL TITLE -->
+                                    Default
+                                    <!-- /PANEL TITLE -->
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
+                            aria-labelledby="headingThree">
+                            <div class="panel-body">
+                                <!-- PANEL BODY -->
+                                <form role="form" class="form-horizontal">
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-title-size" class="col-sm-4 control-label">Title size</label>
+                                        <div class="col-sm-6">
+                                            <select class="form-control" id="default-title-size">
+                                                <option value="16">16pt</option>
+                                                <option value="15">15pt</option>
+                                                <option value="14">14pt</option>
+                                                <option value="13">13pt (initial)</option>
+                                                <option value="12">12pt</option>
+                                                <option value="11">11pt</option>
+                                                <option value="10">10pt</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-title-size"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-title-color" class="col-sm-4 control-label">Title color</label>
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <select id="default-title-color-selector" class="colorselector-data"></select>
+                                                <input type="text" id="default-title-color" class="form-control" placeholder="Default color">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-title-color"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-card-font-size" class="col-sm-4 control-label">Text size</label>
+                                        <div class="col-sm-6">
+                                            <select class="form-control" id="default-card-font-size">
+                                                <option value="12" selected>12px (initial)</option>
+                                                <option value="11">11px</option>
+                                                <option value="inherit">10.66px (inherit: 8pt)</option>
+                                                <option value="10">10px</option>
+                                                <option value="9">9px</option>
+                                                <option value="smaller">8.88px (smaller)</option>
+                                                <option value="8">8px</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-font-card"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row" style="display:none;">
+                                        <label for="default-color-front-selector" class="col-sm-4 control-label">Front color</label>
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <select id="default-color-front-selector" class="colorselector-data"></select>
+                                                <input type="text" id="default-color-front" class="form-control"
+                                                    placeholder="Card front color" data-property="color">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-color-front"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-icon-front" class="col-sm-4 control-label">Front icon</label>
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default icon-select-button"
+                                                        type="button">Search</button>
+                                                </span>
+                                                <input type="text" id="default-icon-front" class="form-control icon-list"
+                                                    placeholder="Icon name">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-icon-front"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="small-icons" class="col-sm-4 control-label"></label>
+                                        <div class="col-sm-6">
+                                            <div class="checkbox" style="padding-bottom: 7px;">
+                                                <label>
+                                                    <input type="checkbox" checked id="small-icons"> Use small icons
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row" style="display:none;">
+                                        <label for="default-color-back-selector" class="col-sm-4 control-label">Back color</label>
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <select id="default-color-back-selector" class="colorselector-data"></select>
+                                                <input type="text" id="default-color-back" class="form-control"
+                                                    placeholder="Default front color" data-property="color">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-color-back"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-icon-back" class="col-sm-4 control-label">Back icon</label>
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default icon-select-button"
+                                                        type="button">Search</button>
+                                                </span>
+                                                <input type="text" id="default-icon-back" class="form-control icon-list"
+                                                    placeholder="Default front icon">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-icon-back"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-icon-back-rotation" class="col-sm-4 control-label" style="font-weight: normal;">Rotation (°)</label>
+                                        <div class="col-sm-6">
+                                            <input type="number" max="360" min="-360" id="default-icon-back-rotation" class="form-control" placeholder="0">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-icon-back-rotation"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-icon-back-container" class="col-sm-4 control-label" style="font-weight: normal;">Container</label>
+                                        <div class="col-sm-6">
+                                            <select class="form-control" id="default-icon-back-container">
+                                                <option value="none">None</option>
+                                                <option value="square">Square</option>
+                                                <option value="rounded-square">Rounded square</option>
+                                                <option value="circle">Circle</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-icon-back-container"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <label for="default-card-background" class="col-sm-4 control-label">Back image</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" id="default-card-background" class="form-control">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary btn-block" id="button-apply-default-card-background"
+                                                onclick="">&gt;</button>
+                                        </div>
+                                    </div>
+                                    <div class="help-block">
+                                        <p>
+                                            An attribute's default value will be applied to cards that are missing a value for that specific attribute. 
+                                            These default values are stored in the browser but not in the file saved using the "Download" button.
+                                        </p>
+                                        <p>
+                                            Press the ">" button to overwrite existing attribute values on each card.
+                                            These values will be stored in the file.
+                                        </p>
+                                    </div>
+                                    <div class="form-group slim-buttons-row">
+                                        <div class="col-sm-12">
+                                            <button type="button" class="btn btn-default" style="width: 100%;" id="reset-default-tab-values">Restore this tab's default values</button>
+                                        </div>
+                                    </div>
+                                    <div id="danger-zone-closed">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <p><a href="javascript:;" id="danger-zone-show">Show Danger Zone</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="danger-zone-opened" class="hidden">
+                                        <p><a href="javascript:;" id="danger-zone-hide">Hide Danger Zone</a></p>
+                                        <div class="form-group slim-buttons-row">
+                                            <div class="col-sm-12 text-center">
+                                                <button type="button" class="btn btn-danger" style="width: 100%;" id="clear-all">CLEAR ALL</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- /PANEL BODY -->
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- /TEMPORARILY HIDDEN: Default panel -->
+
+                <!-- Hidden file load form (required by button-load handler) -->
+                <form style="display:none" id="file-load-form">
+                    <input type="file" id="file-load" name="files[]" multiple class="form-control" style="display:none" />
+                </form>
+
+                <!-- Hidden download settings inputs (required by fields_file.js bindings) -->
+                <div style="display:none">
+                    <input type="radio" name="open-save-dialog" value="">
+                    <input type="radio" name="open-save-dialog" value="1">
+                    <input type="radio" name="browser-asks-where-save" value="">
+                    <input type="radio" name="browser-asks-where-save" value="1">
+                </div>
+
+    </aside>
+    <!-- Drawer toggle bar -->
+    <div id="drawer-toggle" title="Toggle sidebar">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+    </div>
+    <!-- Main content (pushed by drawer) -->
+    <div id="main-content">
+        <div class="container-fluid">
+            <div class="row">
+            <div class="col-md-12 col-lg-7" style="overflow: auto;">
+                <div class="mv-form-header">
+                    <a href="https://morvoldpress.com/" target="_blank" rel="noopener noreferrer" id="morvold-logo-link">
+                        <img src="https://morvoldpress.com/wp-content/uploads/2023/12/MorvoldLogoV2-White-1.png"
+                             alt="Morvold Press"
+                             id="morvold-logo">
+                    </a>
+                    <span class="mv-eyebrow">CARD BUILDER</span>
+                </div>
+                <form class="form-horizontal" role="form" id="monster-card-form">
+                <div class="panel-group" id="monster-form-accordion" role="tablist">
+
+                    <div class="panel panel-default" id="sectionCard">
+                        <div class="panel-body">
+                    <h5 style="margin-top:0;">Card</h5>
+                    <div class="form-group">
+                        <label for="card-template" class="col-sm-3 control-label">Card Type</label>
+                        <div class="col-sm-9">
+                            <select id="card-template" class="form-control mv-visually-hidden">
+                                <option value="npc" selected>NPC</option>
+                                <option value="creature">Creature</option>
+                                <option value="item">Item</option>
+                            </select>
+                            <div class="mv-segmented" id="card-template-segmented" role="tablist" aria-label="Card Type">
+                                <button type="button" class="mv-segmented-btn" data-template="npc" role="tab">NPC</button>
+                                <button type="button" class="mv-segmented-btn" data-template="creature" role="tab">Creature</button>
+                                <button type="button" class="mv-segmented-btn" data-template="item" role="tab">Item</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="card-library-group">
+                        <label class="col-sm-3 control-label">SRD Library</label>
+                        <div class="col-sm-9">
+                            <button type="button" class="btn btn-block card-library-btn" id="button-npc-library" onclick="srd_open_modal('npc')"><i class="fa-solid fa-book-open-reader"></i> NPC Library</button>
+                            <button type="button" class="btn btn-block card-library-btn" id="button-creature-library" onclick="srd_open_modal('creature')"><i class="fa-solid fa-dragon"></i> Creature Library</button>
+                            <button type="button" class="btn btn-block card-library-btn" id="button-item-library" onclick="srd_item_open_modal()"><i class="fa-solid fa-gem"></i> Item Library</button>
+                            <p class="help-block" style="margin:6px 0 0;font-size:12px;">Load a ready-made entry from the SRD 5.1 into this card.</p>
+                        </div>
+                    </div>
+                    <div class="mv-title-count-row">
+                    <div class="form-group">
+                        <label for="card-title" class="col-sm-3 control-label" id="card-title-label"><span id="card-title-label-text">NPC Name</span> <button type="button" class="field-hint-btn" data-hint-for="card-title" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9">
+                            <input type="text" id="card-title" class="form-control" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-count" class="col-sm-3 control-label">Count</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="card-count" class="form-control" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-creature-artwork" class="col-sm-3 control-label">Artwork</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-creature-artwork" class="form-control" placeholder="Image URL">
+                            <div id="artwork-drop-zone" class="artwork-drop-zone" style="margin-top:4px;">
+                                <input type="file" id="monster-creature-artwork-file" accept="image/*" style="display:none;">
+                                <div class="artwork-drop-zone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                <p class="artwork-drop-zone-text">Choose a file or drag &amp; drop it here</p>
+                                <p class="artwork-drop-zone-subtext">PNG, JPG, WEBP and more supported</p>
+                                <button type="button" class="btn artwork-drop-zone-btn" id="artwork-browse-btn">Browse File</button>
+                            </div>
+                            <button type="button" id="browse-wp-media-btn" class="btn btn-default btn-sm" style="margin-top:4px; width:100%;"><i class="fa-solid fa-images"></i> Browse Media Library</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-art-y" class="col-sm-3 control-label">Image Position</label>
+                        <div class="col-sm-9">
+                            <input type="range" id="monster-art-y" class="form-control" min="0" max="100" step="1" value="50" style="padding:0;height:34px;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-art-fit" class="col-sm-3 control-label">Image Fit</label>
+                        <div class="col-sm-9">
+                            <select id="monster-art-fit" class="form-control">
+                                <option value="cover">Cover</option>
+                                <option value="contain">Contain</option>
+                            </select>
+                            <p class="help-block" style="margin:4px 0 0;font-size:12px;">Use "Contain" for transparent PNG/WebP portraits or item art so the full image stays visible.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-art-credit" class="col-sm-3 control-label">Art Credit</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-art-credit" class="form-control" placeholder="Artist name">
+                        </div>
+                    </div>
+                    <div class="form-group" id="background-mode-group">
+                        <label for="monster-background-mode" class="col-sm-3 control-label">Background</label>
+                        <div class="col-sm-9">
+                            <select id="monster-background-mode" class="form-control">
+                                <option value="gradient">Default</option>
+                                <option value="creature_type">Creature Type</option>
+                            </select>
+                            <p class="help-block" id="background-mode-help" style="margin:4px 0 0;font-size:12px;">"Default" builds a dark gradient from the uploaded artwork's colors. "Creature Type" uses the classic type background image.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" id="card-sections-group">
+                        <label class="col-sm-3 control-label">Sections</label>
+                        <div class="col-sm-9">
+                            <div id="card-sections-cb"></div>
+                            <p class="help-block" style="margin:4px 0 0;font-size:12px;">Choose which sections appear in the form and on the card. Unchecking a section hides it but keeps its data. Locked sections are always included.</p>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ ITEM SECTIONS (visible when Card Type = Item) ============ -->
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemDetails" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemDetails">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemDetails" aria-expanded="false">
+                                    Item Details
+                                    <span class="section-counter" data-section="sectionItemDetails"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionItemDetails" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="form-group">
+                        <label for="item-type" class="col-sm-3 control-label">Item Type</label>
+                        <div class="col-sm-9">
+                            <select id="item-type" class="form-control">
+                                <option value="">—</option>
+                                <option>Adventuring Gear</option>
+                                <option>Ammunition</option>
+                                <option>Artisan's Tools</option>
+                                <option>Explosive</option>
+                                <option>Firearm</option>
+                                <option>Food and Drink</option>
+                                <option>Futuristic</option>
+                                <option>Gaming Set</option>
+                                <option>Generic Variant</option>
+                                <option>Heavy Armor</option>
+                                <option>Instrument</option>
+                                <option>Light Armor</option>
+                                <option>Martial Weapon</option>
+                                <option>Medium Armor</option>
+                                <option>Melee Weapon</option>
+                                <option>Modern</option>
+                                <option>Mount</option>
+                                <option>Other</option>
+                                <option>Poison</option>
+                                <option>Potion</option>
+                                <option>Ranged Weapon</option>
+                                <option>Renaissance</option>
+                                <option>Ring</option>
+                                <option>Rod</option>
+                                <option>Scroll</option>
+                                <option>Shield</option>
+                                <option>Simple Weapon</option>
+                                <option>Spellcasting Focus</option>
+                                <option>Staff</option>
+                                <option>Tack and Harness</option>
+                                <option>Tattoo</option>
+                                <option>Tool</option>
+                                <option>Trade Bar</option>
+                                <option>Trade Good</option>
+                                <option>Treasure (Art Object)</option>
+                                <option>Treasure (Coinage)</option>
+                                <option>Treasure (Gemstone)</option>
+                                <option>Vehicle (Air)</option>
+                                <option>Vehicle (Land)</option>
+                                <option>Vehicle (Space)</option>
+                                <option>Vehicle (Water)</option>
+                                <option>Wand</option>
+                                <option>Wondrous Item</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-subtype" class="col-sm-3 control-label">Item Subtype</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-subtype" class="form-control" placeholder="e.g. Longsword, Dragonhide, Phoenix, Frost">
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-tier-group" style="display:none;">
+                        <label for="item-tier" class="col-sm-3 control-label">Tier</label>
+                        <div class="col-sm-9">
+                            <select id="item-tier" class="form-control">
+                                <option value="">—</option>
+                                <option>Minor</option>
+                                <option>Major</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-rarity" class="col-sm-3 control-label">Rarity</label>
+                        <div class="col-sm-9">
+                            <select id="item-rarity" class="form-control">
+                                <option value="">—</option>
+                                <option>None</option>
+                                <option>Common</option>
+                                <option>Uncommon</option>
+                                <option>Rare</option>
+                                <option>Very Rare</option>
+                                <option>Legendary</option>
+                                <option>Artifact</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-cost" class="col-sm-3 control-label">Cost</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-cost" class="form-control" placeholder="e.g. 1,500 gp">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-weight" class="col-sm-3 control-label">Weight</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-weight" class="form-control" placeholder="e.g. 3 lb.">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-attunement" class="col-sm-3 control-label">Attunement</label>
+                        <div class="col-sm-9">
+                            <select id="item-attunement" class="form-control">
+                                <option value="">No Attunement Required</option>
+                                <option value="required">Requires Attunement</option>
+                                <option value="required_by">Requires Attunement By...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-attunement-req-group" style="display:none;">
+                        <label for="item-attunement-req" class="col-sm-3 control-label">Required By</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-attunement-req" class="form-control" placeholder="e.g. a Spellcaster, a Cleric or Paladin, a creature of Good alignment">
+                            <p class="help-block" style="margin:4px 0 0;font-size:12px;">Shown on the card as "Requires Attunement by ..."</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-description" class="col-sm-3 control-label">Description</label>
+                        <div class="col-sm-9"><textarea id="item-description" class="form-control" rows="5" placeholder="What the item does, how it looks, and how it's used"></textarea></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-flavour-text" class="col-sm-3 control-label">Flavour Text</label>
+                        <div class="col-sm-9"><textarea id="item-flavour-text" class="form-control" rows="3" placeholder="Optional italicized flavour text for the card"></textarea></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemFeatures" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemFeatures">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemFeatures" aria-expanded="false">
+                                    Benefits
+                                    <span class="section-counter" data-section="sectionItemFeatures"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionItemFeatures" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <p class="section-description" style="margin-top:0;">Add as many named item benefits as you need. Each one appears on the card like a creature action entry.</p>
+                    <div id="item-features-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="item-features-add-btn"><i class="fa-solid fa-plus"></i> Add Benefit</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemCombat" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemCombat">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemCombat" aria-expanded="false">
+                                    Combat &amp; Properties
+                                    <span class="section-counter" data-section="sectionItemCombat"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionItemCombat" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <p class="section-description" style="margin-top:0;">Only fill what applies — weapon fields for weapons, AC for armor, focus classes for spellcasting foci. Everything left blank stays off the card.</p>
+                    <div class="form-group">
+                        <label for="item-damage-dice" class="col-sm-3 control-label">Damage Dice</label>
+                        <div class="col-sm-9">
+                            <select id="item-damage-dice" class="form-control">
+                                <option value="">—</option>
+                                <option>1</option>
+                                <option>1d4</option>
+                                <option>1d6</option>
+                                <option>1d8</option>
+                                <option>2d4</option>
+                                <option>1d10</option>
+                                <option>1d12</option>
+                                <option>2d6</option>
+                                <option>3d4</option>
+                                <option>2d8</option>
+                                <option>4d4</option>
+                                <option>3d6</option>
+                                <option>2d10</option>
+                                <option>3d8</option>
+                                <option>2d12</option>
+                                <option>3d12</option>
+                                <option>6d8</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-damage-type" class="col-sm-3 control-label">Damage Type</label>
+                        <div class="col-sm-9">
+                            <select id="item-damage-type" class="form-control">
+                                <option value="">—</option>
+                                <option>Acid</option>
+                                <option>Bludgeoning</option>
+                                <option>Cold</option>
+                                <option>Fire</option>
+                                <option>Force</option>
+                                <option>Lightning</option>
+                                <option>Necrotic</option>
+                                <option>Piercing</option>
+                                <option>Psychic</option>
+                                <option>Radiant</option>
+                                <option>Slashing</option>
+                                <option>Thunder</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-range-normal" class="col-sm-3 control-label">Range (Normal)</label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="item-range-normal" class="form-control" min="0" step="5" placeholder="e.g. 30"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-range-long" class="col-sm-3 control-label">Range (Long)</label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="item-range-long" class="form-control" min="0" step="5" placeholder="e.g. 120"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-ac" class="col-sm-3 control-label">Armor Class</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-ac" class="form-control" placeholder="e.g. 14 + Dex modifier (max 2), or +2">
+                        </div>
+                    </div>
+                    <h5>Properties</h5>
+                    <div class="form-group">
+                        <div id="item-properties-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <h5>Spellcasting Focus For</h5>
+                    <div class="form-group">
+                        <div id="item-focus-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemMagic" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemMagic">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemMagic" aria-expanded="false">
+                                    Curse &amp; Sentience
+                                    <span class="section-counter" data-section="sectionItemMagic"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionItemMagic" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-sm-9 col-sm-offset-3">
+                            <div class="checkbox" style="margin-top:0;">
+                                <label>
+                                    <input type="checkbox" id="item-cursed"> Cursed
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-curse-text-group" style="display:none;">
+                        <label for="item-curse-text" class="col-sm-3 control-label">Curse</label>
+                        <div class="col-sm-9"><textarea id="item-curse-text" class="form-control" rows="3" placeholder="Describe the curse and how it manifests"></textarea></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-9 col-sm-offset-3">
+                            <div class="checkbox" style="margin-top:0;">
+                                <label>
+                                    <input type="checkbox" id="item-sentient"> Sentient
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-sentient-text-group" style="display:none;">
+                        <label for="item-sentient-text" class="col-sm-3 control-label">Sentience</label>
+                        <div class="col-sm-9"><textarea id="item-sentient-text" class="form-control" rows="3" placeholder="Personality, communication, senses, and purpose"></textarea></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============ END ITEM SECTIONS ============ -->
+
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureIdentity" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureIdentity">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureIdentity" aria-expanded="false">
+                                    Challenge &amp; Identity
+                                    <span class="section-counter" data-section="sectionCreatureIdentity"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureIdentity" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="form-group">
+                        <label for="monster-challenge-rating" class="col-sm-3 control-label">Challenge Rating</label>
+                        <div class="col-sm-9">
+                            <select id="monster-challenge-rating" class="form-control">
+                                <option value="">—</option>
+                                <option value="0">0</option>
+                                <option value="0.125">1/8</option>
+                                <option value="0.25">1/4</option>
+                                <option value="0.5">1/2</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-size" class="col-sm-3 control-label">Size</label>
+                        <div class="col-sm-9">
+                            <select id="monster-size" class="form-control">
+                                <option value="">—</option>
+                                <option>Tiny</option>
+                                <option>Small</option>
+                                <option>Medium</option>
+                                <option>Large</option>
+                                <option>Huge</option>
+                                <option>Gargantuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-alignment" class="col-sm-3 control-label">Alignment</label>
+                        <div class="col-sm-9">
+                            <select id="monster-alignment" class="form-control">
+                                <option value="">—</option>
+                                <option>Lawful Good</option>
+                                <option>Neutral Good</option>
+                                <option>Chaotic Good</option>
+                                <option>Lawful Neutral</option>
+                                <option>True Neutral</option>
+                                <option>Chaotic Neutral</option>
+                                <option>Lawful Evil</option>
+                                <option>Neutral Evil</option>
+                                <option>Chaotic Evil</option>
+                                <option>Unaligned</option>
+                                <option>Any Alignment</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-creature-type" class="col-sm-3 control-label">Creature Type</label>
+                        <div class="col-sm-9">
+                            <select id="monster-creature-type" class="form-control">
+                                <option value="">—</option>
+                                <option>Aberration</option>
+                                <option>Beast</option>
+                                <option>Celestial</option>
+                                <option>Construct</option>
+                                <option>Dragon</option>
+                                <option>Elemental</option>
+                                <option>Fey</option>
+                                <option>Fiend</option>
+                                <option>Giant</option>
+                                <option>Humanoid</option>
+                                <option>Monstrosity</option>
+                                <option>Ooze</option>
+                                <option>Plant</option>
+                                <option>Undead</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-creature-subtype" class="col-sm-3 control-label">Creature Subtype</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-creature-subtype" class="form-control" placeholder="e.g. Goblinoid, Shapechanger">
+                        </div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionIdentity">
+                        <div class="panel-heading" role="tab" id="heading_sectionIdentity">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionIdentity" aria-expanded="false">
+                                    Identity
+                                    <span class="section-counter" data-section="sectionIdentity"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionIdentity" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Identity</h5>
+                    <div class="form-group" id="npc-title-group">
+                        <label for="monster-npc-title" class="col-sm-3 control-label">NPC Title</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-npc-title" class="form-control" placeholder="e.g. Warden of the Silverpine">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-level" class="col-sm-3 control-label">Level</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="monster-level" class="form-control" placeholder="e.g. 5" min="1" max="20">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-class-select" class="col-sm-3 control-label">Class</label>
+                        <div class="col-sm-9">
+                            <input type="hidden" id="monster-class">
+                            <select id="monster-class-select" class="form-control">
+                                <option value="">—</option>
+                                <option value="Barbarian">Barbarian</option>
+                                <option value="Bard">Bard</option>
+                                <option value="Cleric">Cleric</option>
+                                <option value="Druid">Druid</option>
+                                <option value="Fighter">Fighter</option>
+                                <option value="Monk">Monk</option>
+                                <option value="Paladin">Paladin</option>
+                                <option value="Ranger">Ranger</option>
+                                <option value="Rogue">Rogue</option>
+                                <option value="Sorcerer">Sorcerer</option>
+                                <option value="Warlock">Warlock</option>
+                                <option value="Wizard">Wizard</option>
+                                <option value="__custom__">Custom…</option>
+                            </select>
+                            <input type="text" id="monster-class-custom" class="form-control" placeholder="Enter custom class" style="display:none; margin-top:6px;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-subclass" class="col-sm-3 control-label">Subclass</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="monster-subclass-prefix" style="display:none;"></span>
+                                <input type="text" id="monster-subclass" class="form-control" placeholder="e.g. Beast Master">
+                                <span class="input-group-addon" id="monster-subclass-suffix" style="display:none;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-race" class="col-sm-3 control-label">Race</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-race" class="form-control" placeholder="e.g. Moon Elf">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-npc-alignment" class="col-sm-3 control-label">Alignment</label>
+                        <div class="col-sm-9">
+                            <select id="monster-npc-alignment" class="form-control">
+                                <option value="">â€”</option>
+                                <option>Lawful Good</option>
+                                <option>Neutral Good</option>
+                                <option>Chaotic Good</option>
+                                <option>Lawful Neutral</option>
+                                <option>True Neutral</option>
+                                <option>Chaotic Neutral</option>
+                                <option>Lawful Evil</option>
+                                <option>Neutral Evil</option>
+                                <option>Chaotic Evil</option>
+                                <option>Unaligned</option>
+                                <option>Any Alignment</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-roleplay-background" class="col-sm-3 control-label">Background</label>
+                        <div class="col-sm-9"><textarea id="monster-roleplay-background" class="form-control" rows="2" placeholder="Background"></textarea></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-appearance" class="col-sm-3 control-label">Appearance</label>
+                        <div class="col-sm-9"><textarea id="monster-appearance" class="form-control" rows="4" placeholder="Describe how this NPC looks"></textarea></div>
+                    </div>                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionActions">
+                        <div class="panel-heading" role="tab" id="heading_sectionActions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionActions" aria-expanded="false">
+                                    Roleplay
+                                    <span class="section-counter" data-section="sectionActions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionActions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="form-group"><label for="monster-roleplay-personality" class="col-sm-3 control-label">Personality</label><div class="col-sm-9"><textarea id="monster-roleplay-personality" class="form-control" rows="2" placeholder="Personality"></textarea></div></div>
+                    <div class="form-group"><label for="monster-roleplay-quirk" class="col-sm-3 control-label">Quirk</label><div class="col-sm-9"><textarea id="monster-roleplay-quirk" class="form-control" rows="2" placeholder="Quirk"></textarea></div></div>
+                    <div class="form-group"><label for="monster-roleplay-flaw" class="col-sm-3 control-label">Flaw</label><div class="col-sm-9"><textarea id="monster-roleplay-flaw" class="form-control" rows="2" placeholder="Flaw"></textarea></div></div>
+                    <div class="form-group"><label for="monster-roleplay-goal" class="col-sm-3 control-label">Goal</label><div class="col-sm-9"><textarea id="monster-roleplay-goal" class="form-control" rows="2" placeholder="Goal"></textarea></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionBonusActions">
+                        <div class="panel-heading" role="tab" id="heading_sectionBonusActions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionBonusActions" aria-expanded="false">
+                                    Inventory
+                                    <span class="section-counter" data-section="sectionBonusActions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionBonusActions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <p class="section-description inventory-repeater-description" style="margin-top:0;">Add weapons and loot as draggable entries. Use the Item Tag selector to mark entries as Magic Items or Quest Items on the card.</p>
+                    <p class="section-description" style="margin-top:0;">Separate items with "·", commas, or new lines — each item becomes its own tag on the card.</p>
+                    <div class="form-group"><label for="monster-inventory-weapons" class="col-sm-3 control-label">Weapons</label><div class="col-sm-9"><textarea id="monster-inventory-weapons" class="form-control" rows="2" placeholder="e.g. Longbow +1 · Shortsword · Oaken Shield"></textarea></div></div>
+                    <div class="form-group"><label for="monster-inventory-loot" class="col-sm-3 control-label">Loot</label><div class="col-sm-9"><textarea id="monster-inventory-loot" class="form-control" rows="2" placeholder="e.g. Silver whistle · 3 potions of healing"></textarea></div></div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Weapons</label>
+                        <div class="col-sm-9">
+                            <p class="section-description" style="margin-top:0;">Weapon rows appear in the Weapons section and calculate hit/damage from Level/CR and ability scores when available.</p>
+                            <div id="npc-weapons-detailed-repeater"></div>
+                            <button type="button" class="item-repeater-btn" id="npc-weapons-detailed-add-btn"><i class="fa-solid fa-plus"></i> Add Weapon</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Loot</label>
+                        <div class="col-sm-9">
+                            <p class="section-description" style="margin-top:0;">Loot rows appear in the Loot section, alongside any coins listed below.</p>
+                            <div id="npc-loot-detailed-repeater"></div>
+                            <button type="button" class="item-repeater-btn" id="npc-loot-detailed-add-btn"><i class="fa-solid fa-plus"></i> Add Loot</button>
+                        </div>
+                    </div>
+                    <h5>Coins</h5>
+                    <p class="section-description">Coins with an amount above zero appear as tags in the Loot row, marked with their coin token.</p>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="currency-fields-row">
+                                <div class="currency-input"><label for="monster-currency-pp">PP</label><input type="number" id="monster-currency-pp" class="form-control" placeholder="0" min="0"></div>
+                                <div class="currency-input"><label for="monster-currency-gp">GP</label><input type="number" id="monster-currency-gp" class="form-control" placeholder="0" min="0"></div>
+                                <div class="currency-input"><label for="monster-currency-ep">EP</label><input type="number" id="monster-currency-ep" class="form-control" placeholder="0" min="0"></div>
+                                <div class="currency-input"><label for="monster-currency-sp">SP</label><input type="number" id="monster-currency-sp" class="form-control" placeholder="0" min="0"></div>
+                                <div class="currency-input"><label for="monster-currency-cp">CP</label><input type="number" id="monster-currency-cp" class="form-control" placeholder="0" min="0"></div>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionReactions">
+                        <div class="panel-heading" role="tab" id="heading_sectionReactions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionReactions" aria-expanded="false">
+                                    Related Cards
+                                    <span class="section-counter" data-section="sectionReactions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionReactions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <p class="section-description">Link other cards to this NPC. Choose the card type for a colored tag, then enter the linked card's name.</p>
+                    <div class="form-group"><label class="col-sm-3 control-label">Card 1</label><div class="col-sm-9"><select id="monster-related-1-type" class="form-control" style="margin-bottom:2px;"><option value="">— Card Type —</option><option value="stat-block">NPC Stat Block</option><option value="companion">Companion</option><option value="magic-item">Magic Item</option><option value="quest-item">Quest Item</option></select><input type="text" id="monster-related-1-name" class="form-control" placeholder="Card name"></div></div>
+                    <div class="form-group"><label class="col-sm-3 control-label">Card 2</label><div class="col-sm-9"><select id="monster-related-2-type" class="form-control" style="margin-bottom:2px;"><option value="">— Card Type —</option><option value="stat-block">NPC Stat Block</option><option value="companion">Companion</option><option value="magic-item">Magic Item</option><option value="quest-item">Quest Item</option></select><input type="text" id="monster-related-2-name" class="form-control" placeholder="Card name"></div></div>
+                    <div class="form-group"><label class="col-sm-3 control-label">Card 3</label><div class="col-sm-9"><select id="monster-related-3-type" class="form-control" style="margin-bottom:2px;"><option value="">— Card Type —</option><option value="stat-block">NPC Stat Block</option><option value="companion">Companion</option><option value="magic-item">Magic Item</option><option value="quest-item">Quest Item</option></select><input type="text" id="monster-related-3-name" class="form-control" placeholder="Card name"></div></div>
+                    <div class="form-group"><label class="col-sm-3 control-label">Card 4</label><div class="col-sm-9"><select id="monster-related-4-type" class="form-control" style="margin-bottom:2px;"><option value="">— Card Type —</option><option value="stat-block">NPC Stat Block</option><option value="companion">Companion</option><option value="magic-item">Magic Item</option><option value="quest-item">Quest Item</option></select><input type="text" id="monster-related-4-name" class="form-control" placeholder="Card name"></div></div>
+                    <div class="form-group"><label class="col-sm-3 control-label">Card 5</label><div class="col-sm-9"><select id="monster-related-5-type" class="form-control" style="margin-bottom:2px;"><option value="">— Card Type —</option><option value="stat-block">NPC Stat Block</option><option value="companion">Companion</option><option value="magic-item">Magic Item</option><option value="quest-item">Quest Item</option></select><input type="text" id="monster-related-5-name" class="form-control" placeholder="Card name"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="panel panel-default section-accordion" id="sectionAbilityScores">
+                        <div class="panel-heading" role="tab" id="heading_sectionAbilityScores">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionAbilityScores" aria-expanded="false">
+                                    Ability Scores
+                                    <span class="section-counter" data-section="sectionAbilityScores"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionAbilityScores" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Ability Scores (0–30)</h5>
+                    <p class="section-description">Monsters use the same six ability scores as player characters, each ranging from 1 (minimum) to 30 (maximum). The modifier for each score is calculated the same way as for a player character.</p>
+                    <p class="section-description">If you're unsure what scores to assign, find a comparable creature in the Monster Manual and use its scores as a reference.</p>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-str" class="control-label">STR <button type="button" class="field-hint-btn" data-hint-for="monster-str" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-str" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-str" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-dex" class="control-label">DEX <button type="button" class="field-hint-btn" data-hint-for="monster-dex" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-dex" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-dex" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-con" class="control-label">CON <button type="button" class="field-hint-btn" data-hint-for="monster-con" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-con" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-con" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-int" class="control-label">INT <button type="button" class="field-hint-btn" data-hint-for="monster-int" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-int" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-int" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-wis" class="control-label">WIS <button type="button" class="field-hint-btn" data-hint-for="monster-wis" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-wis" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-wis" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="monster-cha" class="control-label">CHA <button type="button" class="field-hint-btn" data-hint-for="monster-cha" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-cha" class="form-control" min="0" max="30" value="10">
+                                    <span class="input-group-addon monster-calc-mod" id="monster-calc-cha" style="min-width:3em;">+0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionDefense">
+                        <div class="panel-heading" role="tab" id="heading_sectionDefense">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionDefense" aria-expanded="false">
+                                    Defense &amp; Health
+                                    <span class="section-counter" data-section="sectionDefense"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionDefense" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Defense</h5>
+                    <div class="form-group">
+                        <label for="monster-ac-type" class="col-sm-3 control-label">AC Type</label>
+                        <div class="col-sm-9">
+                            <select id="monster-ac-type" class="form-control">
+                                <option value="">—</option>
+                                <option value="natural">Natural Armor</option>
+                                <option value="equipped">Equipped Armor</option>
+                                <option value="mage_armor">Mage Armor</option>
+                                <option value="unarmored_defense">Unarmored Defense</option>
+                                <option value="custom">Custom AC</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="monster-natural-armor-group" style="display:none;">
+                        <label for="monster-natural-armor-type" class="col-sm-3 control-label">Natural Armor</label>
+                        <div class="col-sm-9">
+                            <select id="monster-natural-armor-type" class="form-control">
+                                <option value="light">Light Natural Armor</option>
+                                <option value="regular" selected>Regular Natural Armor</option>
+                                <option value="heavy">Heavy Natural Armor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="monster-equipped-armor-group" style="display:none;">
+                        <label for="monster-equipped-armor-type" class="col-sm-3 control-label">Armor</label>
+                        <div class="col-sm-9">
+                            <select id="monster-equipped-armor-type" class="form-control">
+                                <option value="">—</option>
+                                <option value="padded">Padded</option>
+                                <option value="leather">Leather</option>
+                                <option value="studded">Studded Leather</option>
+                                <option value="hide">Hide</option>
+                                <option value="chain_shirt">Chain Shirt</option>
+                                <option value="scale_mail">Scale Mail</option>
+                                <option value="spiked_armor">Spiked Armor</option>
+                                <option value="breastplate">Breastplate</option>
+                                <option value="halfplate">Half Plate</option>
+                                <option value="ring_mail">Ring Mail</option>
+                                <option value="chain_mail">Chain Mail</option>
+                                <option value="splint">Splint</option>
+                                <option value="plate">Plate</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="monster-unarmored-defense-group" style="display:none;">
+                        <label for="monster-unarmored-defense-type" class="col-sm-3 control-label">Unarmored Defense</label>
+                        <div class="col-sm-9">
+                            <select id="monster-unarmored-defense-type" class="form-control">
+                                <option value="">—</option>
+                                <option value="wis">Wisdom (Monk)</option>
+                                <option value="cha">Charisma (Bard)</option>
+                                <option value="con">Constitution (Barbarian)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="monster-custom-ac-group">
+                        <label for="monster-custom-ac" class="col-sm-3 control-label">Custom AC Override</label>
+                        <div class="col-sm-9"><input type="number" id="monster-custom-ac" class="form-control" min="0" max="30"></div>
+                    </div>
+                    <div id="monster-ac-context-note-1" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-ac-context-note-2" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div class="form-group">
+                        <label for="monster-wearing-shield" class="col-sm-3 control-label">Wearing Shield?</label>
+                        <div class="col-sm-9">
+                            <input type="checkbox" id="monster-wearing-shield" class="form-control" style="width:auto;" title="+2 AC when checked">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-hp-override" class="col-sm-3 control-label">HP Override</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="monster-hp-override" class="form-control" min="0" placeholder="Leave blank for calculated HP">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label"></div>
+                        <div class="col-sm-9"><span class="text-muted" id="monster-calc-hp">Calculated HP: —</span></div>
+                    </div>                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionSpeeds">
+                        <div class="panel-heading" role="tab" id="heading_sectionSpeeds">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionSpeeds" aria-expanded="false">
+                                    Speeds
+                                    <span class="section-counter" data-section="sectionSpeeds"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionSpeeds" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Speeds (ft., multiples of 5)</h5>
+                    <p class="section-description">Nearly every monster has at least a walking speed. Additional movement modes make a creature more versatile and interesting on the battlefield.</p>
+                    <div class="mv-grid-4">
+                    <div class="form-group">
+                        <label for="monster-walk-speed" class="col-sm-3 control-label">Walk <button type="button" class="field-hint-btn" data-hint-for="monster-walk-speed" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="monster-walk-speed" class="form-control" min="0" step="5" value="30"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-burrow-speed" class="col-sm-3 control-label">Burrow <button type="button" class="field-hint-btn" data-hint-for="monster-burrow-speed" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="monster-burrow-speed" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-climb-speed" class="col-sm-3 control-label">Climb <button type="button" class="field-hint-btn" data-hint-for="monster-climb-speed" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="monster-climb-speed" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-swim-speed" class="col-sm-3 control-label">Swim <button type="button" class="field-hint-btn" data-hint-for="monster-swim-speed" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="monster-swim-speed" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    </div>
+                    <div class="mv-grid-4">
+                    <div class="form-group">
+                        <label for="monster-fly-speed" class="col-sm-3 control-label">Fly <button type="button" class="field-hint-btn" data-hint-for="monster-fly-speed" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><div class="input-group"><input type="number" id="monster-fly-speed" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-hover" class="col-sm-3 control-label">Hover <button type="button" class="field-hint-btn" data-hint-for="monster-hover" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                        <div class="col-sm-9"><input type="checkbox" id="monster-hover" class="form-control" style="width:auto;"></div>
+                    </div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionResistances">
+                        <div class="panel-heading" role="tab" id="heading_sectionResistances">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionResistances" aria-expanded="false">
+                                    Resistances
+                                    <span class="section-counter" data-section="sectionResistances"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionResistances" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Resistances <button type="button" class="field-hint-btn" data-hint-for="section-resistances" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></h5>
+                    <div class="form-group">
+                        <div id="monster-damage-resistances-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionDamageImmunities">
+                        <div class="panel-heading" role="tab" id="heading_sectionDamageImmunities">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionDamageImmunities" aria-expanded="false">
+                                    Damage Immunities
+                                    <span class="section-counter" data-section="sectionDamageImmunities"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionDamageImmunities" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Damage Immunities <button type="button" class="field-hint-btn" data-hint-for="section-damage-immunities" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></h5>
+                    <div class="form-group">
+                        <div id="monster-damage-immunities-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionVulnerabilities">
+                        <div class="panel-heading" role="tab" id="heading_sectionVulnerabilities">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionVulnerabilities" aria-expanded="false">
+                                    Vulnerabilities
+                                    <span class="section-counter" data-section="sectionVulnerabilities"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionVulnerabilities" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Vulnerabilities <button type="button" class="field-hint-btn" data-hint-for="section-vulnerabilities" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></h5>
+                    <div class="form-group">
+                        <div id="monster-damage-vulnerabilities-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionConditionImmunities">
+                        <div class="panel-heading" role="tab" id="heading_sectionConditionImmunities">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionConditionImmunities" aria-expanded="false">
+                                    Condition Immunities
+                                    <span class="section-counter" data-section="sectionConditionImmunities"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionConditionImmunities" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Condition Immunities <button type="button" class="field-hint-btn" data-hint-for="section-condition-immunities" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></h5>
+                    <div class="form-group">
+                        <div id="monster-condition-immunities-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionSavingThrows">
+                        <div class="panel-heading" role="tab" id="heading_sectionSavingThrows">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionSavingThrows" aria-expanded="false">
+                                    Saving Throws
+                                    <span class="section-counter" data-section="sectionSavingThrows"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionSavingThrows" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Saving Throws</h5>
+                    <p class="section-description">By default, a monster's saving throw bonus equals its relevant ability modifier. You can grant proficiency in a saving throw to make a creature more resistant to specific effects — the bonus then becomes the monster's proficiency bonus + the relevant ability modifier.</p>
+                    <p class="section-description">Saving throw proficiencies are most useful for offsetting a low ability score. For example, an undead creature with low Wisdom might still have a strong Wisdom save to reflect how difficult it is to charm, frighten, or turn.</p>
+                    <div class="field-hint-note"><i class="fa-solid fa-circle-info"></i> <b>Note:</b> A monster with 3–4 saving throw proficiencies has its effective AC increased by 2 for CR purposes. A monster with 5 or more proficiencies increases effective AC by 4.</div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <div id="monster-saving-throws-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionSkills">
+                        <div class="panel-heading" role="tab" id="heading_sectionSkills">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionSkills" aria-expanded="false">
+                                    Skills
+                                    <span class="section-counter" data-section="sectionSkills"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionSkills" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Skills</h5>
+                    <p class="section-description">A monster proficient in a skill adds its proficiency bonus to the relevant ability check. You can grant expertise (double proficiency) to reflect exceptional mastery — for example, a doppelganger might have double proficiency in Deception. You might also grant Half Proficiency to several skills to represent a <i>Jack-Of-All-Trades</i>, as with a typical Bard.</p>
+                    <p class="section-description">Skill bonuses have no bearing on a monster's challenge rating. Assign them when they reinforce the creature's concept and role.</p>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group"><label for="monster-skill-acrobatics" class="control-label">Acrobatics</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-acrobatics" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-acrobatics">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-animal_handling" class="control-label">Animal Handling</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-animal_handling" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-animal_handling">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-arcana" class="control-label">Arcana</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-arcana" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-arcana">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-athletics" class="control-label">Athletics</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-athletics" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-athletics">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-deception" class="control-label">Deception</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-deception" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-deception">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-history" class="control-label">History</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-history" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-history">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-insight" class="control-label">Insight</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-insight" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-insight">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-intimidation" class="control-label">Intimidation</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-intimidation" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-intimidation">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-investigation" class="control-label">Investigation</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-investigation" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-investigation">—</span></div></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group"><label for="monster-skill-medicine" class="control-label">Medicine</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-medicine" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-medicine">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-nature" class="control-label">Nature</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-nature" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-nature">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-perception" class="control-label">Perception</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-perception" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-perception">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-performance" class="control-label">Performance</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-performance" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-performance">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-persuasion" class="control-label">Persuasion</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-persuasion" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-persuasion">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-religion" class="control-label">Religion</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-religion" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-religion">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-sleight_of_hand" class="control-label">Sleight of Hand</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-sleight_of_hand" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-sleight_of_hand">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-stealth" class="control-label">Stealth</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-stealth" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-stealth">—</span></div></div>
+                            <div class="form-group"><label for="monster-skill-survival" class="control-label">Survival</label><div class="skill-select-wrapper"><i class="fa-regular fa-circle skill-icon"></i><select id="monster-skill-survival" class="form-control skill-select"><option value="none">Not Proficient</option><option value="proficient">Proficient</option><option value="half">Half Proficient</option><option value="expertise">Expertise</option></select><span class="input-group-addon skill-bonus-addon" id="skill-bonus-survival">—</span></div></div>
+                        </div>
+                    </div>                        </div>
+                    </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionSenses">
+                        <div class="panel-heading" role="tab" id="heading_sectionSenses">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionSenses" aria-expanded="false">
+                                    Senses
+                                    <span class="section-counter" data-section="sectionSenses"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionSenses" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5 style="margin-top:0;">Senses</h5>
+                    <p class="section-description">Special senses let a monster perceive its environment in unusual ways. They have no bearing on CR, but they make a creature more tactically interesting.</p>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="monster-blindsight" class="control-label">Blindsight <button type="button" class="field-hint-btn" data-hint-for="monster-blindsight" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-blindsight" class="form-control" min="0" step="5" placeholder="0">
+                                    <span class="input-group-addon">ft.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="monster-darkvision" class="control-label">Darkvision <button type="button" class="field-hint-btn" data-hint-for="monster-darkvision" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-darkvision" class="form-control" min="0" step="5" placeholder="0">
+                                    <span class="input-group-addon">ft.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="monster-tremorsense" class="control-label">Tremorsense <button type="button" class="field-hint-btn" data-hint-for="monster-tremorsense" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-tremorsense" class="form-control" min="0" step="5" placeholder="0">
+                                    <span class="input-group-addon">ft.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="monster-truesight" class="control-label">Truesight <button type="button" class="field-hint-btn" data-hint-for="monster-truesight" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button></label>
+                                <div class="input-group">
+                                    <input type="number" id="monster-truesight" class="form-control" min="0" step="5" placeholder="0">
+                                    <span class="input-group-addon">ft.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionLanguages">
+                        <div class="panel-heading" role="tab" id="heading_sectionLanguages">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionLanguages" aria-expanded="false">
+                                    Languages
+                                    <span class="section-counter" data-section="sectionLanguages"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionLanguages" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <h5>Languages</h5>
+                    <p class="section-description">Languages have no bearing on CR. A monster can know as many languages as fits its concept, though most know one or two at most, and many beasts know none. A creature can understand a language without being able to speak it.</p>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" style="text-align:left;">Standard Languages</label>
+                        <div id="monster-languages-standard-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" style="text-align:left;">Exotic Languages</label>
+                        <div id="monster-languages-exotic-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    
+
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureTraits" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureTraits">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureTraits" aria-expanded="false">
+                                    Creature Traits
+                                    <span class="section-counter" data-section="sectionCreatureTraits"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureTraits" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="field-hint-note" style="margin-bottom:8px;">
+                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Trait/action text supports notation like <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[dex|dc=auto]</code>, <code>@save[dex/str|dc=auto]</code>, <code>@failure[effect]</code>, and <code>@success[effect]</code>. Damage bonuses can be <code>auto</code>, <code>str</code>, <code>dex</code>, <code>con</code>, <code>int</code>, <code>wis</code>, <code>cha</code>, or <code>none</code>.
+                    </div>
+                    <div id="monster-traits-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="monster-traits-add-btn"><i class="fa-solid fa-plus"></i> Add Trait</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureActions" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureActions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureActions" aria-expanded="false">
+                                    Actions
+                                    <span class="section-counter" data-section="sectionCreatureActions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureActions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="field-hint-note" style="margin-bottom:8px;">
+                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Inside an Attack's <b>Hit</b> text or an Action's <b>Effect</b> text, you can insert <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[con|dc=14]</code>, <code>@save[dex/str|dc=auto]</code>, <code>@failure[whatever happens on a failure]</code>, and <code>@success[whatever happens on a success]</code>. Optional <code>|ability=cha</code> lets you override which ability is used for an auto DC.
+                    </div>
+                    <div id="monster-actions-note-cr" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-note-str" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-note-dex" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-note-cha" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-note-wis" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-note-int" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
+                    <div id="monster-actions-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="monster-actions-add-attack-btn"><i class="fa-solid fa-plus"></i> Add Attack</button>
+                        <button type="button" class="item-repeater-btn" id="monster-actions-add-btn"><i class="fa-solid fa-plus"></i> Add Action</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureBonusActions" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureBonusActions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureBonusActions" aria-expanded="false">
+                                    Bonus Actions
+                                    <span class="section-counter" data-section="sectionCreatureBonusActions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureBonusActions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div id="monster-bonusactions-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="monster-bonusactions-add-attack-btn"><i class="fa-solid fa-plus"></i> Add Bonus Attack</button>
+                        <button type="button" class="item-repeater-btn" id="monster-bonusactions-add-btn"><i class="fa-solid fa-plus"></i> Add Bonus Action</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureReactions" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureReactions">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureReactions" aria-expanded="false">
+                                    Reactions
+                                    <span class="section-counter" data-section="sectionCreatureReactions"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureReactions" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div id="monster-reactions-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="monster-reactions-add-btn"><i class="fa-solid fa-plus"></i> Add Reaction</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default section-accordion" id="sectionCreatureLegendary" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionCreatureLegendary">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionCreatureLegendary" aria-expanded="false">
+                                    Legendary Actions
+                                    <span class="section-counter" data-section="sectionCreatureLegendary"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionCreatureLegendary" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <div class="form-group">
+                        <label for="legendary-actions-per-round" class="col-sm-4 control-label">Legendary Actions per Round</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="legendary-actions-per-round" data-property="legendary_actions_per_round">
+                                <option value="">None</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="monster-legendary-repeater"></div>
+                    <div class="item-repeater-toolbar">
+                        <button type="button" class="item-repeater-btn" id="monster-legendary-add-btn"><i class="fa-solid fa-plus"></i> Add Legendary Action</button>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                </form>
+
+</div>
+            <div class="col-md-12 col-lg-5">
+                <!-- Sticky action bar -->
+                <div class="preview-action-bar">
+                    <button type="button" class="btn preview-action-btn preview-action-btn--primary" id="button-generate">
+                        <i class="fa-solid fa-file-pdf"></i> Deck (PDF)
+                    </button>
+                    <button type="button" class="btn preview-action-btn preview-action-btn--secondary" id="button-export-png">
+                        <i class="fa-solid fa-image"></i> Card (PNG)
+                    </button>
+                    <button type="button" class="btn preview-action-btn preview-action-btn--tertiary" id="button-export-png-fast">
+                        <i class="fa-solid fa-bolt"></i> Fast PNG (Beta)
+                    </button>
+                </div>
+                <div class="mv-preview-eyebrow">
+                    <span>LIVE PREVIEW</span>
+                    <div class="mv-hairline"></div>
+                </div>
+                <div id="preview-container" class="preview-container">
+                </div>
+                                <!-- Page Settings: standalone section below accordion tabs -->
+                                <div class="page-settings-section" id="sectionPage">
+                                    <div class="page-settings-header">
+                                        <h4 class="panel-title">Page Settings</h4>
+                                    </div>
+                                    <div class="page-settings-body">
+                <form role="form" class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label for="page-size" class="col-sm-4 control-label">Page Size</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="page-size">
+                                                                <option value="210mm,297mm" selected>A4 - 8.27" &times; 11.69"</option>
+                                                                <option value="8.5in,11in">US Letter - 8.5" &times; 11"</option>
+                                                                <option value="11in,17in">US 11" &times; 17" / Tabloid</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="page-margin" class="col-sm-4 control-label">Safe Print Margin</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="page-margin">
+                                                                <option value="0in" selected>None / Borderless</option>
+                                                                <option value="0.125in">1/8" (~3.2 mm)</option>
+                                                                <option value="0.25in">1/4" (~6.4 mm)</option>
+                                                                <option value="0.5in">1/2" (~12.7 mm)</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style="display:none;">
+                                                        <div class="col-sm-4">
+                                                            <div class="text-right text-muted">
+                                                                <i id="page-orientation"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-8" style="display: flex;">
+                                                            <input type="text" id="page-width" class="form-control" placeholder="0in" readonly>
+                                                            <div class="text-center" style="display:none;"><button class="btn btn-secondary" id="page-rotate">&times;</button></div>
+                                                            <input type="text" id="page-height" class="form-control" placeholder="0in" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="card-size" class="col-sm-4 control-label">Card Size</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control card-size" id="card-size" data-option="card_size">
+                                                                <option value="63mm,88mm" selected>Poker - 63mm &times; 88mm</option>
+                                                                <option value="2.5in,3.5in">Poker US - 2 1/2" &times; 3 1/2"</option>
+                                                                <option value="2.25in,3.5in">Bridge - 2 1/4" &times; 3 1/2"</option>
+                                                                <option value="2.25in,3.5in">Standard - 2 1/4" &times; 3 1/2"</option>
+                                                                <option value="3in,2in">Standard Small - 3" &times; 2"</option>
+                                                                <option value="3.5in,5in">Standard Large - 3 1/2" &times; 5"</option>
+                                                                <option value="3.5in,5.5in">Standard Jumbo - 3 1/2" &times; 5 1/2"</option>
+                                                                <option value="1.75in,2.5in">Mini - 1 3/4" &times; 2 1/2"</option>
+                                                                <option value="2.75in,4.75in">Tarot - 2 3/4" &times; 4 3/4"</option>
+                                                                <option value="3.5in,5.75in">Tarot Large - 3 1/2" &times; 5 3/4"</option>
+                                                                <option value="3.5in,2in">Business - 3 1/2" &times; 2"</option>
+                                                                <option value="1.75in,3.5in">Domino - 1 3/4" &times; 3 1/2"</option>
+                                                                <option value="3in,4.5in">Index Small - 3" &times; 4 1/2"</option>
+                                                                <option value="3in,5in">Index Regular - 3" &times; 5"</option>
+                                                                <option value="3in,5.5in">Index Large - 3" &times; 5 1/2"</option>
+                                                                <option value="4.75in,7in">Index Giant - 4 3/4" &times; 7"</option>
+                                                                <option value="3in,3in">Square Small - 3" &times; 3"</option>
+                                                                <option value="3.5in,3.5in">Square Regular - 3 1/2" &times; 3 1/2"</option>
+                                                                <option value="4.75in,4.75in">Square Large - 4 3/4" &times; 4 3/4"</option>
+                                                                <option value="7.5in,5.0in">7 1/2" &times; 5"</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style="display:none;">
+                                                        <div class="col-sm-4">
+                                                            <div class="text-right text-muted">
+                                                                <i id="card-orientation"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-8" style="display: flex;">
+                                                            <input type="text" id="card-width" class="form-control"
+                                                                data-option="card_width" value="" placeholder="0in" readonly>
+                                                            <div class="text-center" style="display:none;"><button class="btn btn-secondary"
+                                                                    id="card-rotate">&times;</button></div>
+                                                            <input type="text" id="card-height" class="form-control"
+                                                                data-option="card_height" value="" placeholder="0in" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="card-arrangement" class="col-sm-4 control-label">Arrangement</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="card-arrangement"
+                                                                data-option="card_arrangement">
+                                                                <option value="doublesided" selected>Double sided printing - flip on long edge -</option>
+                                                                <option value="front_only">Front side only</option>
+                                                                <option value="side_by_side">Side by side</option>
+                                                                <option value="side_by_side_alt">Side by side, alternating</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style="display:none;">
+                                                        <label for="page-columns" class="col-sm-4 control-label">Cards/page</label>
+                                                        <div class="col-sm-8" style="display: flex;">
+                                                            <input type="number" id="page-columns" class="form-control cards-per-page-display"
+                                                                data-option="page_columns" value="3" min="1" readonly tabindex="-1">
+                                                            <div class="text-center" style="display:none;"><button class="btn btn-secondary"
+                                                                    id="grid-rotate">&times;</button></div>
+                                                            <input type="number" id="page-rows" class="form-control cards-per-page-display"
+                                                                data-option="page_rows" value="3" min="1" readonly tabindex="-1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-4 control-label"><label for="bleed-preset">Bleed</label> <a href="javascript;" onclick="$('#bleed-info').toggle(); return false;">(?)</a></div>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="bleed-preset">
+                                                                <option value="0in">None (0")</option>
+                                                                <option value="0.03125in">1/32" (~0.8 mm)</option>
+                                                                <option value="0.0625in" selected>1/16" (~1.6 mm)</option>
+                                                                <option value="0.125in">1/8" (~3.2 mm)</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Hidden inputs still drive layout/export — do not remove -->
+                                                    <div style="display:none;">
+                                                        <input type="text" id="back-bleed-width" class="form-control"
+                                                            data-option="back_bleed_width" placeholder="0in">
+                                                        <button class="btn btn-secondary" id="back-bleed-rotate">&times;</button>
+                                                        <input type="text" id="back-bleed-height" class="form-control"
+                                                            data-option="back_bleed_height" placeholder="0in">
+                                                    </div>
+                                                    <div class="form-group" id="bleed-info" style="display: none;">
+                                                        <div class="col-sm-4"></div>
+                                                        <div class="col-sm-8 help-block">
+                                                            The values entered are TOTAL bleed. For example, entering 4 mm as horizontal bleed adds 2 mm to the left and 2 mm to the right.
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">Cards Per Page</label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" id="cards-per-page-display" class="form-control cards-per-page-display" readonly tabindex="-1" placeholder="&mdash;">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style="display:none;">
+                                                        <label for="foreground-color" class="col-sm-4 control-label">Front color</label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group">
+                                                                <select id="foreground-color-selector"></select>
+                                                                <input type="text" id="foreground-color" class="form-control"
+                                                                    placeholder="Front page color" data-property="foreground_color">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" style="display:none;">
+                                                        <label for="background-color" class="col-sm-4 control-label">Back color</label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group">
+                                                                <select id="background-color-selector"></select>
+                                                                <input type="text" id="background-color" class="form-control"
+                                                                    placeholder="Back page color" data-property="background_color">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <fieldset style="display:none;">
+                                                        <div class="form-group">
+                                                            <legend class="col-sm-4 control-label">Zoom</legend>
+                                                            <div class="col-sm-8">
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <div class="checkbox" style="padding-bottom: 7px;">
+                                                                        <label>
+                                                                            <input type="checkbox" checked id="page-zoom-keep-ratio"
+                                                                                data-option="page_zoom_keep_ratio" value="1"> Keep aspect ratio
+                                                                        </label>
+                                                                    </div>
+                                                                    <div style="padding-top: 7px; padding-left: 15px;">
+                                                                        <a id="page-zoom-100" href="javascript:;">100%</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <fieldset>
+                                                            <div class="form-group">
+                                                                <legend class="col-sm-4 control-label" style="font-weight: normal;">Perc. (%)</legend>
+                                                                <div class="col-sm-8">
+                                                                    <div class="input-group" style="display: flex;">
+                                                                        <input type="number" id="page-zoom-width" class="form-control"
+                                                                            data-option="page_zoom_width" placeholder="0">
+                                                                        <div class="text-center"><button class="btn btn-secondary"
+                                                                            id="page-zoom-rotate">&times;</button></div>
+                                                                        <input type="number" id="page-zoom-height" class="form-control"
+                                                                            data-option="page_zoom_height" placeholder="0">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                        <fieldset>
+                                                            <div class="form-group">
+                                                                <legend class="col-sm-4 control-label" style="font-weight: normal;">Card size</legend>
+                                                                <div class="col-sm-8">
+                                                                    <div class="input-group" style="display: flex;">
+                                                                        <input type="text" id="card-zoom-width" class="form-control"
+                                                                            data-option="card_zoom_width">
+                                                                        <div class="text-center"><button class="btn btn-secondary"
+                                                                            id="card-zoom-rotate">&times;</button></div>
+                                                                        <input type="text" id="card-zoom-height" class="form-control"
+                                                                            data-option="card_zoom_height">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                    </fieldset>
+                                                    <fieldset>
+                                                        <div class="form-group" style="margin-bottom: 0;">
+                                                            <legend class="col-sm-4 control-label">Other</legend>
+                                                            <div class="col-sm-8">
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <div class="checkbox" style="padding-bottom: 7px;">
+                                                                        <label>
+                                                                            <input type="checkbox" checked id="rounded-corners"
+                                                                            data-option="rounded_corners" value="1"> Rounded card corners
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-4"></div>
+                                                            <div class="col-sm-8">
+                                                                <div class="checkbox" style="padding-bottom: 7px;">
+                                                                    <label>
+                                                                        <input type="checkbox" id="crop-marks"> Crop marks
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                    </div>
+                                </div>
+                <div class="mv-preview-note">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <p>Preview updates live as you edit. Toggle any stat block off to hide it from the printed card; Page Settings control how the whole deck lays out for print.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /#main-content -->
+    <!-- Modal (Sidebar Tooltips) -->
+    <div class="modal fade" id="sidebar-tooltip-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title" id="sidebar-tooltip-title"></h4>
+                </div>
+                <div class="modal-body" id="sidebar-tooltip-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal (Info)-->
+    <div class="modal" id="help-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">RPG card generator</h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>
+                            To learn about what features are available to define a card, you can:
+                            <ul>
+                                <li>read the <a href="about.html">Basic documentation</a></li>
+                                <li>read the <a href="documentation.html">Elements documentation</a></li>
+                                <li>inspect the sample deck</li>
+                            </ul>
+                        </li>
+                        <li>
+                            If you find a bug or have a feature request, you can post them at the <a
+                                href="https://github.com/mephitrpg/rpg-cards/issues">Github project site</a> to maintain a
+                            record if you wish.
+                            However, it's not guarantee if and when they will be reviewed.
+                        </li>
+                        <li>Some RPG systems are protected by copyright. Even if some spell/item data is freely
+                            available, it does not mean you may redistribute cards containing such data.</li>
+                        <li>
+                            The user interface consists of three columns:
+                            <img alt="help" src="img/help/help.png"
+                                style="max-width:95%; display:block; padding: 5px; margin: 10px 0 10px 0; border: 1px solid #ebebeb; box-shadow: 0 0 5px #ebebeb;" />
+                            The left column contains the menu and global settings.
+                            In the middle menu, you can select and edit individual cards.
+                            The right column contains a preview of the selected card.
+                        </li>
+                        <li>
+                            To use the generator, either load the sample card deck ("Load sample"),
+                            load a card deck from a file ("Load from file"),
+                            or manually add some cards.
+                            When you're done, click on "Generate" to generate a document with all your cards, which can
+                            then be printed.
+                        </li>
+                    </ul>
+                    <h4>Printing notes</h4>
+                    <ul>
+                        <li>The generated cards open in a new tab or window. If you don't see any new tab or window, check your popup and script blockers. If that does not help, try disabling all addons.</li>
+                        <li>Make sure you enable the printing of background images and colors in your browser.</li>
+                        <li>Make sure your printer uses the correct paper size (same as in the editor).</li>
+                        <li>You can use the double-sided (flip on long edge) print setting, but manually printing each side usually aligns the pages more accurately.</li>
+                        <li>Do not scale the document to fit the page. Print at original size.</li>
+                        <li>Some printers are not very precise (pages print slightly shifted or rotated) and the cards will not line up with the card backs. If this is the case, there's not much you can do. Try making the page background the same color as the cards or use the bleed option, so that you won't get any white edges on the card. If that does not help, try a different printer or print single-sided.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal (Sort)-->
+    <div class="modal" id="sort-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Sort cards</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Enter the comparison function below.
+                        The comparison function is a block of javascript code.
+                        Return -1 if card_a should appear before card_b.
+                    </p>
+                    <textarea class="form-control" rows="10" id="sort-function" wrap="off">
+if (card_a.title < card_b.title) {
+    return -1;
+}
+else if (card_a.title > card_b.title) {
+    return 1;
+}
+else {
+    return 0;
+}
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="sort-execute">Sort</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal (Filter)-->
+    <div class="modal" id="filter-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Filter/map cards</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Enter code below that will be executed for each card in the deck.
+                        Return false to remove the current card from the deck.
+                    </p>
+                    <textarea class="form-control" rows="10" id="filter-function" wrap="off">
+// Color all spell cards yellow
+if (card_has_tag(card, "spell")) {
+    card.color = "yellow";w
+}
+
+// Remove all creature cards
+if (card_has_tag(card, "creature")) {
+    return false;
+}
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="filter-execute">Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- Field hint modal (reusable) -->
+    <div class="modal" id="field-hint-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="field-hint-modal-title"></h4>
+                </div>
+                <div class="modal-body" id="field-hint-modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/field-hints.js"></script>
+
+<!-- WordPress Media Picker Modal -->
+<div id="wp-media-picker-overlay">
+    <div id="wp-media-picker-modal">
+        <div id="wp-media-picker-header">
+            <span>Select Creature Image</span>
+            <button type="button" id="wp-media-picker-close">&times;</button>
+        </div>
+        <div id="wp-media-picker-breadcrumb"></div>
+        <div id="wp-media-picker-grid"></div>
+        <div id="wp-media-picker-footer">
+            <button type="button" id="wp-media-picker-prev" class="btn btn-sm btn-default">&larr; Previous</button>
+            <span id="wp-media-picker-page-info"></span>
+            <button type="button" id="wp-media-picker-next" class="btn btn-sm btn-default">Next &rarr;</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── SRD Monster Library Modal ─────────────────────────────────────── -->
+<div class="modal fade" id="srd-monster-modal" tabindex="-1" role="dialog" aria-labelledby="srdModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content srd-modal-content">
+            <div class="modal-header srd-modal-header">
+                <button type="button" class="close srd-modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="srdModalLabel"><i class="fa-solid fa-book-open-reader"></i> NPC Library</h4>
+                <p class="srd-modal-subtitle">Select an entry to load it into a card.</p>
+            </div>
+            <div class="modal-body srd-modal-body">
+                <div class="srd-filters">
+                    <input type="text" id="srd-search" class="form-control srd-search-input" placeholder="&#xf002;  Search by name…">
+                    <select id="srd-type-filter" class="form-control srd-type-select">
+                        <option value="">All Types</option>
+                    </select>
+                    <button type="button" id="srd-art-filter" class="btn srd-art-filter-btn" title="Show only monsters with art">
+                        <i class="fa-solid fa-image"></i> Has Art
+                    </button>
+                </div>
+                <div class="srd-table-wrap">
+                    <table class="table srd-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="srd-cr-col">CR</th>
+                                <th>Type</th>
+                                <th class="srd-size-col">Size</th>
+                            </tr>
+                        </thead>
+                        <tbody id="srd-monster-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer srd-modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="srd-load-new-btn" disabled>Create as New Card</button>
+                <button type="button" class="btn btn-success" id="srd-load-btn" disabled>Load into Current Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── SRD Item Library Modal ─────────────────────────────────────────── -->
+<div class="modal fade" id="srd-item-modal" tabindex="-1" role="dialog" aria-labelledby="srdItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content srd-modal-content">
+            <div class="modal-header srd-modal-header">
+                <button type="button" class="close srd-modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="srdItemModalLabel"><i class="fa-solid fa-gem"></i> Item Library</h4>
+                <p class="srd-modal-subtitle">Select an item to load it into a card.</p>
+            </div>
+            <div class="modal-body srd-modal-body">
+                <div class="srd-filters">
+                    <input type="text" id="srd-item-search" class="form-control srd-search-input" placeholder="&#xf002;  Search by name…">
+                    <select id="srd-item-type-filter" class="form-control srd-type-select">
+                        <option value="">All Types</option>
+                    </select>
+                    <select id="srd-item-rarity-filter" class="form-control srd-type-select">
+                        <option value="">All Rarities</option>
+                    </select>
+                    <button type="button" id="srd-item-art-filter" class="btn srd-art-filter-btn" title="Show only items with art">
+                        <i class="fa-solid fa-image"></i> Has Art
+                    </button>
+                </div>
+                <div class="srd-table-wrap">
+                    <table class="table srd-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th class="srd-cr-col">Rarity</th>
+                                <th class="srd-size-col">Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody id="srd-item-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer srd-modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="srd-item-load-new-btn" disabled>Create as New Card</button>
+                <button type="button" class="btn btn-success" id="srd-item-load-btn" disabled>Load into Current Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ── /SRD Monster Library Modal ────────────────────────────────────── -->
+
+<!-- ── JSON Builder Import Modal ─────────────────────────────────────── -->
+<div class="modal fade" id="jsonbuilder-import-modal" tabindex="-1" role="dialog" aria-labelledby="jsonbuilderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content srd-modal-content">
+            <div class="modal-header srd-modal-header">
+                <button type="button" class="close srd-modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="jsonbuilderModalLabel"><i class="fa-solid fa-dragon"></i> JSON Builder Import</h4>
+                <p class="srd-modal-subtitle">Drop a 5e Tools / RPG Cards JSON Builder .json file below, or paste the raw JSON array.</p>
+            </div>
+            <div class="modal-body srd-modal-body">
+                <!-- Drop zone -->
+                <div id="jsonbuilder-drop-zone" class="foundry-drop-zone">
+                    <input type="file" id="jsonbuilder-file-input" accept=".json" style="display:none;">
+                    <div class="jb-drop-label">
+                        <div class="artwork-drop-zone-icon"><i class="fa-solid fa-file-code"></i></div>
+                        <p class="artwork-drop-zone-text">Drop a JSON Builder .json file here</p>
+                        <p class="artwork-drop-zone-subtext">Array of card objects from 5e Tools or RPG Cards JSON Builder</p>
+                    </div>
+                    <div class="jb-drop-filename foundry-drop-filename" style="display:none;">
+                        <i class="fa-solid fa-circle-check"></i> <span id="jsonbuilder-drop-filename-text"></span>
+                    </div>
+                </div>
+                <!-- Paste area -->
+                <p class="foundry-or-divider">— or paste JSON below —</p>
+                <textarea id="jsonbuilder-paste-area" class="form-control foundry-paste-area" rows="5" placeholder='[{ "count": 1, "title": "Monster Name", "contents": [...] }]'></textarea>
+                <!-- Parsed preview -->
+                <div id="jsonbuilder-preview" class="foundry-preview" style="display:none;"></div>
+            </div>
+            <div class="modal-footer srd-modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="jsonbuilder-load-btn" disabled>Add to Deck</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ── /JSON Builder Import Modal ────────────────────────────────────── -->
+
+<!-- Card Type segmented control: drives the hidden #card-template select so all
+     existing bindings (ui_on_template_change etc.) fire unchanged. UI only. -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var sel = document.getElementById('card-template');
+    var seg = document.getElementById('card-template-segmented');
+    if (!sel || !seg) return;
+    var btns = seg.querySelectorAll('.mv-segmented-btn');
+    function sync() {
+        btns.forEach(function (b) {
+            b.classList.toggle('is-active', b.getAttribute('data-template') === sel.value);
+        });
+    }
+    window.ui_sync_card_template_segmented = sync;
+    btns.forEach(function (b) {
+        b.addEventListener('click', function () {
+            var v = b.getAttribute('data-template');
+            if (sel.value === v) return;
+            sel.value = v;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            sync();
+        });
+    });
+    sel.addEventListener('change', sync);
+    sync();
+});
+</script>
+
+</body>
+
+</html>

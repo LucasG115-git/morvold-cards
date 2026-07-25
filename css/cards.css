@@ -1,0 +1,1667 @@
+.card {
+    --card-paper-base: #ece3d4;
+    --card-paper-shade: rgba(109, 83, 52, 0.08);
+    --card-paper-highlight: rgba(255, 255, 255, 0.18);
+    --card-paper-texture-size: 180px 180px;
+    --card-stone-base: #383533;
+    --card-stone-shadow: rgba(0, 0, 0, 0.22);
+    --card-stone-highlight: rgba(255, 255, 255, 0.08);
+    --card-stone-texture-size: 200px 200px;
+}
+
+.card {
+    position: relative;
+}
+
+.hide {
+    display: none;
+}
+
+.card-content {
+    box-sizing: border-box;
+    height: 100%;
+    border: 2mm solid;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Lora', serif;
+    font-size: 8pt;
+    flex-shrink: 0;
+}
+
+.card.rounded-corners {
+    border-radius: 4px;
+}
+
+.card.rounded-corners .card-content {
+    border-radius: inherit;
+}
+
+.card-content-container {
+    padding:2mm;
+    padding-top:1mm;
+    border-radius: 2mm;
+    margin-top:0px;
+    background-color: white;
+    border-color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-size: inherit;
+    overflow: hidden;
+}
+
+.valignref-content-area .card-content-container {
+    position: relative;
+}
+
+.card-back {
+/*     background-color: white; */
+    border-radius: 4mm;
+    border-color: inherit;
+    margin: 3mm;
+    flex: 1;
+    display: flex;
+}
+
+/* Monster back: same border as front (no inner margin), fills card-content */
+.card-back.card-back-monster {
+    margin: 0;
+    border-radius: inherit;
+    min-height: 100%;
+}
+
+.card-back-inner {
+    margin: 3mm;
+    border: 1mm solid;
+    border-color: inherit;
+    border-radius: 4mm;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-back-icon {
+    width: 1in;
+    height: 1in;
+    border-color: inherit;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.card-back-icon-none {
+    background-color: transparent;
+}
+
+.card-back-icon-square {
+
+}
+
+.card-back-icon-square > div {
+    width: 100%;
+    height: 100%;
+    background-size: 75%;
+    background-position: 50% 50%;
+}
+
+.card-back-icon-rounded-square {
+    border-radius: 4mm;
+}
+.card-back-icon-rounded-square > div {
+    width: 100%;
+    height: 100%;
+    background-size: 75%;
+    background-position: 50% 50%;
+}
+
+.card-back-icon-circle {
+    border-radius: 50%;
+}
+.card-back-icon-circle > div {
+    width: 100%;
+    height: 100%;
+    background-size: 75%;
+    background-position: 50% 50%;
+}
+
+.card-header {
+    display: flex;
+}
+.card-header > * {
+    flex-grow: 1;
+}
+
+.card-title-icon, .card-font-size-icon {
+    width: 12mm;
+    height: 12mm;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: inherit;
+    border-color: inherit;
+}
+.card-title-icon-container, .card-font-size-icon-container  {
+    border-radius: 1mm;
+    background-color: inherit;
+    border-color: inherit;
+}
+
+.card-title-inlineicon, .card-font-size-inlineicon {
+    display: inline-block;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: inherit;
+    background-position: center;
+    border-color: inherit;
+    margin: -1mm 0 0mm 1mm;
+}
+.card-title-inlineicon-container {
+    display: flex;
+    justify-content: flex-end;
+    background-color: inherit;
+    border-color: inherit;
+    padding: 1mm 0 1mm 1mm;
+}
+
+.card-type  {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding-left: 0 !important;
+    margin-left: -20mm; /* allow some overlapping */
+}
+
+.card-title {
+    height: 8mm;
+    padding-left: 2mm;
+    font-family: 'Lora', serif;
+    font-variant: small-caps;
+    font-weight: bold;
+    background-color: inherit;
+    color: white;
+    white-space: nowrap;
+}
+.card-title-16 {
+    font-size: 16pt;
+    line-height: 6.5mm;
+}
+.card-title-15 {
+    font-size: 15pt;
+    line-height: 6.5mm;
+}
+.card-title-14 {
+    font-size: 14pt;
+    line-height: 6.5mm;
+}
+.card-title-13 {
+    font-size: 13pt;
+    line-height: 7mm;
+}
+.card-title-12 {
+    font-size: 12pt;
+    line-height: 7mm;
+}
+.card-title-11 {
+    font-size: 11pt;
+    line-height: 7.5mm;
+}
+.card-title-10 {
+    font-size: 10pt;
+    line-height: 7.5mm;
+}
+.card-font-size-12 {
+    font-size: 12px;
+    line-height: 1.3;
+}
+.card-font-size-11 {
+    font-size: 11px;
+    line-height: 1.3;
+}
+.card-font-size-10 {
+    font-size: 10px;
+    line-height: 1.3;
+}
+.card-font-size-9 {
+    font-size: 9px;
+    line-height: 1.3;
+}
+.card-font-size-8 {
+    font-size: 8px;
+    line-height: 1.3;
+}
+.card-font-size-smaller {
+    font-size: smaller;
+    line-height: 1.3;
+}
+.card-subtitle {
+    margin-bottom: 0.0em;
+    line-height: 18px;
+    font-family: 'Lora', serif;
+    font-size: 10pt;
+    font-style: italic;
+}
+.card-picture {
+    height: 80px;
+    line-height: 18px;
+    margin-bottom: 0.0em;
+}
+.card-inline-icon {
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    border-radius: 2mm;
+}
+
+.card-inline-icon.align-left {
+    align-self: flex-start;
+}
+
+.card-inline-icon.align-right {
+    align-self: flex-end;
+}
+
+.card-inline-icon.align-center {
+    align-self: center;
+}
+
+.card-property-line {
+    text-indent: -1em;
+    margin-left: 1em;
+    color: black;
+}
+
+.card-property-name {
+    display: inline;
+    font-size: inherit;
+    font-weight: bold;
+}
+
+.card-property-text {
+    display: inline;
+}
+
+.card-section {
+    border-bottom: 1px solid;
+    font-size: 10pt;
+    font-variant: small-caps;
+    font-weight: normal;
+    letter-spacing: 1px;
+    margin: 0;
+    border-color: inherit;
+}
+
+.card-section + .card-element {
+    margin-top: 0.3em;
+}
+
+.card-p {
+
+}
+
+.card-fill {flex:1;}
+
+.card-description-line {
+    margin-top: 0.5em;
+    margin-bottom: 0.0em;
+    color: black;
+}
+
+.card-description-name {
+    display: inline;
+    font-size: inherit;
+    font-style: italic;
+    font-weight: bold;
+}
+/* .card-description-name::after {
+    content: ".";
+} */
+
+.card-description-text {
+    display: inline;
+}
+
+.card-ruler {
+    width: 100%;
+    height: 1.0mm;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    flex-shrink: 0;
+}
+
+.card-p2e-ruler {
+    width: 100%;
+    height: 1.0mm;
+    margin-top: 0;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.card-box {
+    display: inline;
+    height: 10mm;
+    width: 10mm;
+    margin-right: 0.3em;
+}
+
+.card-stats {
+    width: 100%
+}
+.card-stats-sw-derived {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.card-stats-header {
+    text-align: center;
+    padding: 0;
+    width: 16.6%;
+}
+
+.card-stats-cell {
+    text-align: center;
+    padding: 0;
+}
+
+.card-bullet-line {
+    color: black;
+    padding-left: 16px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.card-bullet {
+    margin-bottom: 0;
+    margin-top: 0;
+    font-size: inherit;
+}
+
+.card-footer {
+    width: 100%;
+    padding: 0.2rem;
+    padding-right: 3px;
+    box-sizing: border-box;
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.card-footer-text {
+    color: white;
+    margin: 0;
+    font-size: 8px;
+}
+
+.footer-part {
+    display: inline-block;
+    margin: 0 2px;
+}
+
+.footer-separator {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 1px;
+    font-weight: bold;
+}
+
+
+.card-p2e-trait-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.card-p2e-trait {
+    border-style: double;
+    border-width: 2px;
+    color: white;
+    font-style: normal;
+    font-variant: small-caps;
+    font-weight: bold;
+    padding-right: 5px;
+    padding-left: 5px;
+    text-align: left;
+    text-indent: 0em;
+    display: inline-block;
+    margin: 0;
+}
+
+.card-p2e-trait-common {
+    border-color: #d8c483;
+    background-color: #522e2c;
+}
+
+.card-p2e-trait-uncommon {
+    background-color: #c45500;
+    border-color: #d8c483;
+}
+
+.card-p2e-trait-rare {
+    background-color: #022661;
+    border-color: #d8c483;
+}
+
+.card-p2e-trait-alignment {
+    background-color: #576294;
+    border-color: #d8c483;
+}
+
+.card-p2e-trait-size {
+    background-color: #3A7B58;
+    border-color: #d8c483;
+}
+
+.card-p2e-attribute-line {
+    color: black;
+}
+
+.card-p2e-attributes-text {
+    margin: 0;
+    font-size: 9.5px;
+}
+
+.card-pills {
+    margin-bottom: 0.3em;
+}
+
+.card-pill {
+    border-radius: 1em;
+    line-height: 2;
+}
+
+:root {
+    --crop-mark-stroke: 1px;
+    --crop-mark-distance: 1mm;
+    --crop-mark-length: 5mm;
+    --crop-mark-total: calc(var(--crop-mark-distance) + var(--crop-mark-length));
+}
+
+.crop-mark {
+    position: absolute;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+.crop-mark-top-left-v {
+    top: 0;
+    /* left: 0; */
+    height: var(--crop-mark-length);
+    transform: translateY(calc(var(--crop-mark-total) * -1)) translateX(calc(var(--crop-mark-stroke) / -2));
+}
+
+.crop-mark-top-left-h {
+    /* top: 0; */
+    left: 0;
+    width: var(--crop-mark-length);
+    transform: translateX(calc(var(--crop-mark-total) * -1)) translateY(calc(var(--crop-mark-stroke) / -2));
+}
+
+.crop-mark-top-right-v {
+    top: 0;
+    /* right: 0; */
+    height: var(--crop-mark-length);
+    transform: translateY(calc(var(--crop-mark-total) * -1)) translateX(calc(var(--crop-mark-stroke) / 2));
+}
+
+.crop-mark-top-right-h {
+    /* top: 0; */
+    right: 0;
+    width: var(--crop-mark-length);
+    transform: translateX(var(--crop-mark-total)) translateY(calc(var(--crop-mark-stroke) / -2));
+}
+
+.crop-mark-bottom-left-v {
+    bottom: 0;
+    /* left: 0; */
+    height: var(--crop-mark-length);
+    transform: translateY(var(--crop-mark-total)) translateX(calc(var(--crop-mark-stroke) / -2));
+}
+
+.crop-mark-bottom-left-h {
+    /* bottom: 0; */
+    left: 0;
+    width: var(--crop-mark-length);
+    transform: translateX(calc(var(--crop-mark-total) * -1)) translateY(calc(var(--crop-mark-stroke) / 2));
+}
+
+.crop-mark-bottom-right-v {
+    bottom: 0;
+    /* right: 0; */
+    height: var(--crop-mark-length);
+    transform: translateY(var(--crop-mark-total)) translateX(calc(var(--crop-mark-stroke) / 2));
+}
+
+.crop-mark-bottom-right-h {
+    /* bottom: 0; */
+    right: 0;
+    width: var(--crop-mark-length);
+    transform: translateX(var(--crop-mark-total)) translateY(calc(var(--crop-mark-stroke) / 2));
+}
+
+/* ============================================================================
+   Monster card front layout (Chuul-style: image top, dark stat block, traits box)
+   ============================================================================ */
+
+.monster-card-inner {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.card-texture-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url('../assets/rough_texture.png');
+    background-repeat: repeat;
+    background-size: 420px 420px;
+    opacity: 1;
+    mix-blend-mode: overlay;
+}
+
+/* Image on top: ~65–70% of card, full width; HP/AC badges in bottom-right */
+.monster-artwork {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    background-color: rgba(0,0,0,0.15);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.monster-art-credit {
+    display: block;
+    font-family: 'Lora', serif;
+    text-align: right;
+    font-size: 6pt;
+    color: #ffffff;
+    line-height: 1.2;
+    padding: 0 2.5mm 1mm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.monster-badges-overlay {
+    position: absolute;
+    bottom: 0.25mm;
+    right: 0.25mm;
+    display: flex;
+    align-items: center;
+    gap: 0.25mm;
+}
+
+.monster-text {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+    padding: 0;
+    /* Gold bar only; no fill so creature-type background on .monster-card-inner shows through */
+    background: linear-gradient(180deg, #d4a84b 0%, #c99820 8%, #b8860b 25%, #8b6914 60%, #6b5010 100%) 0 0 / 100% 0.5mm no-repeat;
+    background-color: transparent;
+    font-size: 6.5pt;
+    color: #fff;
+    font-family: 'Lora', serif;
+}
+
+/* Header block: name, subtitle, HP/AC badges */
+.monster-header-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2mm 3mm;
+    padding: 1.25mm 2.5mm 1.25mm;
+    padding-right: 2mm;
+}
+
+.monster-header-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.monster-header-block.header-align-center {
+    justify-content: center;
+}
+
+.monster-header-block.header-align-center .monster-header-main {
+    text-align: center;
+}
+
+.monster-header-block.header-align-left .monster-header-main {
+    text-align: left;
+}
+
+.monster-name {
+    font-family: 'Cinzel', serif;
+    font-size: 10pt;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.5mm 0;
+    line-height: 1.15;
+}
+
+/* Race – Class – Subclass: muted reference microline under the epithet */
+.monster-subtitle {
+    font-family: 'Lora', serif;
+    font-size: 6pt;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    opacity: 1;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.item-rarity-line {
+    margin: 0 0 0.6mm 0;
+}
+
+/* Kept for any other badge grouping; overlay uses .monster-badges-overlay */
+.monster-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.25mm;
+    flex-shrink: 0;
+}
+
+/* HP and AC badges: your heart and shield images as containers, value centered on top */
+.monster-hp-badge,
+.monster-ac-badge {
+    font-family: 'Cinzel', serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+    font-weight: bold;
+    line-height: 150%;
+    color: #fff;
+    position: relative;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.monster-badge-val {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0.15mm 0 rgba(0,0,0,0.6), 0 0.3mm 1px rgba(0,0,0,0.4);
+    margin-bottom: 6px;
+}
+
+/* Heart image as background; value centered inside */
+.monster-badge-heart {
+    width: 9.5mm;
+    height: 9.5mm;
+    background-image: url('../assets/heart.png');
+}
+
+.monster-badge-heart .monster-badge-val {
+    transform: none;
+}
+
+/* Shield image as background; value centered inside */
+.monster-badge-shield {
+    width: 9.5mm;
+    height: 9.5mm;
+    background-image: url('../assets/shield.png');
+}
+
+.monster-badge-shield .monster-badge-val {
+    transform: none;
+}
+
+/* Speed, CR, PB row: no row background; each value in its own paper-backed cell */
+.monster-meta-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0.5mm;
+    margin: 0 2.5mm;
+    font-size: 6pt;
+}
+
+.monster-meta-cell {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1mm 1.25mm;
+    color: #0C0C0C;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+}
+
+.monster-meta-cell:first-child {
+    border-radius: 1.25mm 0 0 0;
+}
+
+.monster-meta-cell:last-child {
+    border-radius: 0 1.25mm 0 0;
+}
+
+.monster-meta-cell:only-child {
+    border-radius: 1.25mm 1.25mm 0 0;
+}
+
+/* Speed: fills remaining space */
+.monster-meta-cell-speed {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+/* Compact meta values */
+.monster-meta-cell-init,
+.monster-meta-cell-level,
+.monster-meta-cell-cr,
+.monster-meta-cell-pb {
+    flex: 0 0 auto;
+}
+
+.monster-speed,
+.monster-init,
+.monster-level,
+.monster-cr,
+.monster-pb {
+    display: inline-flex;
+    align-items: center;
+    color: #0C0C0C;
+}
+
+.monster-speed {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 0.75mm;
+}
+
+.monster-speed-text {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.monster-init,
+.monster-level,
+.monster-cr,
+.monster-pb {
+    white-space: nowrap;
+}
+
+.monster-meta-label {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.82em;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* Label icons: filled with card (creature-type) background via mask */
+.monster-label-icon {
+    display: inline-block;
+    width: 3.2mm;
+    height: 3.2mm;
+    vertical-align: middle;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.monster-meta-cell .monster-label-icon {
+    margin-right: 0.8mm;
+}
+
+.monster-optional-label .monster-label-icon {
+    margin-right: 0.6mm;
+}
+
+/* Ability scores: stone background */
+.monster-abilities-block {
+    padding: 1.25mm 1.25mm;
+    margin: 0 2.5mm;
+    background-color: var(--card-stone-base);
+    background-image:
+        linear-gradient(180deg, var(--card-stone-highlight), var(--card-stone-shadow)),
+        url('../assets/stone_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-stone-texture-size);
+    color: #F6F6F6;
+}
+
+.monster-abilities-block .monster-stat-cell,
+.monster-abilities-block .monster-stat-mod {
+    color: #F6F6F6;
+}
+
+.monster-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.monster-stat-cell {
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0.95;
+}
+
+.monster-stat-mod {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 8pt;
+    text-align: center;
+}
+
+/* Optional section: wrapping flex; each box sizes to content, can grow to use row space */
+.monster-optional-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5mm;
+    padding: 0 2.5mm;
+}
+
+.monster-optional-box {
+    flex: 1 1 auto;
+    min-width: min-content;
+    font-size: 5.5pt;
+    line-height: 1;
+    color: #0C0C0C;
+    padding: 1mm 1.5mm;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    display: flex;
+    align-items: center;
+    gap: 0.5mm;
+}
+
+.monster-optional-label {
+    font-weight: bold;
+    margin-right: 0.25mm;
+    color: #0C0C0C;
+    display: inline-flex;
+    align-items: center;
+}
+
+.monster-optional-value {
+    font-weight: normal;
+    color: #0C0C0C;
+}
+
+/* Monster card back: artwork as background, type image as 50% overlay, content on top */
+.monster-back-inner {
+    position: relative;
+    min-height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.monster-back-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* ── Appearance placement: lives on the back by default, moves to the front
+      when the back content doesn't fit the card ── */
+
+/* Front copy — hidden by default */
+.front-traits-container {
+    display: none;
+}
+
+/* Back copy — visible by default */
+.back-overflow-traits {
+    display: block;
+    position: relative;
+    z-index: 1;
+    padding: 2.5mm 0 0;
+}
+
+/* When the back is full (.appearance-front set on both cards):
+   show the front copy, hide the back copy */
+.card.appearance-front .front-traits-container {
+    display: block;
+}
+
+.card.appearance-front .back-overflow-traits {
+    display: none;
+}
+
+/* ── End appearance placement ── */
+
+.monster-back-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+    padding: 1.8mm 0 1.8mm;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+/* Creature Traits: header row, divider, paper box */
+.monster-traits-section {
+    padding: 0 2.5mm;
+}
+
+.monster-traits-header {
+    font-family: 'Cinzel', serif;
+    font-size: 5pt;
+    line-height: 125%;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0 0 0.5mm 0;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2mm;
+}
+
+/* Flanking rules either side of section headers: — INVENTORY — */
+.monster-traits-header::before,
+.monster-traits-header::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide the separator line directly under the Creature Traits header */
+.monster-traits-header + .monster-traits-divider {
+    display: none;
+}
+
+.monster-traits-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.35);
+    margin: 0 0 1mm 0;
+}
+
+.monster-traits-title {
+    text-align: center;
+    font-size: 5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1mm;
+    opacity: 0.9;
+}
+
+.monster-traits-box {
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    color: #0C0C0C;
+    border-radius: 0 0 1.25mm 1.25mm;
+    padding: 1.5mm 2mm;
+    font-size: 5.5pt;
+    line-height: 1.3;
+}
+
+.monster-traits-box .monster-trait,
+.monster-traits-box .monster-trait-name,
+.monster-traits-box .monster-trait-desc {
+    color: #0C0C0C;
+}
+
+.monster-trait {
+    margin-bottom: 1mm;
+}
+
+.monster-trait:last-child {
+    margin-bottom: 0;
+}
+
+.monster-trait-name {
+    font-weight: bold;
+}
+
+.monster-trait-desc {
+    display: inline;
+    margin-left: 0.4mm;
+}
+
+.monster-reaction-inline-label {
+    font-size: 0.92em;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.monster-action-inline-meta,
+.monster-action-inline-label {
+    font-size: 0.92em;
+    font-style: italic;
+}
+
+.monster-action-inline-label {
+    font-weight: 700;
+}
+
+.npc-detailed-weapons-section {
+    margin-top: 1mm;
+}
+
+.npc-weapon-detail-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.8mm;
+    color: #0C0C0C;
+    padding: 0;
+    font-family: 'Lora', serif;
+    font-size: 6pt;
+    line-height: 1.25;
+}
+
+.npc-weapon-detail-row {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.7mm;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+    float: left;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    border-radius: 1mm;
+    padding: 0.65mm 1.2mm;
+    vertical-align: middle;
+}
+
+.npc-weapon-detail-row-tagged {
+    gap: 0.7mm;
+    padding: 0.55mm 1.2mm 0.55mm 0.8mm;
+    width: auto;
+}
+
+.npc-weapon-detail-row-tagged .monster-related-glyph .monster-rel-icon {
+    width: 2.1mm;
+    height: 2.1mm;
+}
+
+.npc-weapon-detail-name {
+    font-weight: 400;
+}
+
+.npc-weapon-detail-meta {
+    white-space: nowrap;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.npc-weapon-detail-notes {
+    opacity: 0.9;
+}
+
+/* Monster form accordion (center column): full heading bar is clickable to toggle */
+#monster-form-accordion .panel-heading .panel-title a {
+    display: block;
+    margin: -10px -15px;
+    padding: 10px 15px;
+}
+
+/* ── Optional stat block at the top of the card back ───────────────────── */
+.monster-stats-top {
+    position: relative;
+    z-index: 1;
+    padding-top: 2.5mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+}
+
+.monster-stats-front {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+    padding-bottom: 0.5mm;
+}
+
+/* ── NPC title (front, italic gold epithet directly under the name) ─────── */
+.monster-npc-title {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 7pt;
+    color: #e8c877;
+    margin: 0.4mm 0 0.6mm;
+    line-height: 1.2;
+}
+
+.npc-pretitle {
+    color: #fff;
+    margin: 0 0 0.6mm 0;
+}
+
+/* ── Roleplay: striped rows with colored small-caps labels ─────────────── */
+.monster-roleplay-section .monster-traits-box {
+    padding: 0;
+}
+
+.monster-roleplay-section .monster-trait {
+    margin: 0;
+    padding: 0.85mm 2mm;
+}
+
+.monster-roleplay-section .monster-trait:nth-child(even) {
+    background: rgba(60, 40, 20, 0.07);
+}
+
+.monster-roleplay-section .monster-trait-name {
+    font-family: 'Cinzel', serif;
+    font-size: 4.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 0.6mm;
+}
+
+.monster-roleplay-section .monster-trait-desc {
+    font-size: 6pt;
+}
+
+/* Per-field label colors (tied to the field, not the row position) */
+.monster-rp-background .monster-trait-name { color: #8a6215; }
+.monster-rp-personality .monster-trait-name { color: #7a4a20; }
+.monster-rp-quirk .monster-trait-name { color: #6d3030; }
+.monster-rp-flaw .monster-trait-name { color: #8c2f2f; }
+.monster-rp-goal .monster-trait-name { color: #2e5a68; }
+
+/* ── Weapons / Loot: content-fit item tags that wrap (card back) ────────── */
+.monster-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6mm;
+}
+
+.monster-item-tag {
+    display: inline-block;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    color: #0C0C0C;
+    border-radius: 1mm;
+    padding: 0.8mm 1.5mm;
+    font-size: 6pt;
+    line-height: 1.2;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+/* Coin tags: coin token image + amount, same paper-tag body */
+.monster-coin-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7mm;
+    padding: 0.5mm 1.4mm 0.5mm 0.9mm;
+}
+
+.monster-coin-img {
+    width: 2.8mm;
+    height: 2.8mm;
+    display: block;
+    object-fit: contain;
+}
+
+.npc-loot-detail-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65mm;
+    vertical-align: middle;
+}
+
+.npc-weapon-detail-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65mm;
+    vertical-align: middle;
+    font-size: 6pt;
+}
+
+.npc-loot-detail-tag-tagged {
+    padding: 0.55mm 1.2mm 0.55mm 0.8mm;
+}
+
+.npc-weapon-detail-tag-tagged {
+    padding: 0.55mm 1.2mm 0.55mm 0.8mm;
+}
+
+.npc-weapon-detail-tag-tagged .monster-related-glyph .monster-rel-icon,
+.npc-loot-detail-tag-tagged .monster-related-glyph .monster-rel-icon {
+    width: 2.1mm;
+    height: 2.1mm;
+}
+
+.npc-weapon-detail-name,
+.npc-weapon-detail-meta,
+.npc-weapon-detail-notes,
+.npc-loot-detail-name,
+.npc-loot-detail-notes {
+    font-weight: 400;
+}
+
+.npc-weapon-detail-notes,
+.npc-loot-detail-notes {
+    opacity: 0.9;
+}
+
+.monster-currency-coin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4mm;
+    height: 3.4mm;
+    border-radius: 50%;
+    font-family: 'Cinzel', serif;
+    font-size: 3.4pt;
+    font-weight: bold;
+    color: #2b2b2b;
+    box-shadow: inset 0 0 0 0.2mm rgba(0, 0, 0, 0.3);
+}
+
+.monster-currency-val {
+    font-weight: bold;
+}
+
+.monster-currency-pp .monster-currency-coin { background: #d3d7de; }
+.monster-currency-gp .monster-currency-coin { background: #e2c044; }
+.monster-currency-sp .monster-currency-coin { background: #b9bec7; }
+.monster-currency-ep .monster-currency-coin { background: #a7b479; }
+.monster-currency-cp .monster-currency-coin { background: #cf8a5a; }
+
+/* ── Inventory: Weapons / Loot as full-width rows with run-in labels ───── */
+.monster-inventory-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5mm;
+}
+
+.monster-inventory-box {
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    color: #0C0C0C;
+    border-radius: 1mm;
+    padding: 1.1mm 2mm;
+    font-size: 5.5pt;
+    line-height: 1.3;
+}
+
+.monster-inventory-label {
+    display: inline;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    font-size: 4.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 1mm;
+    color: #7a4a20;
+}
+
+.monster-inventory-value {
+    display: inline;
+    font-size: 6pt;
+    color: #0C0C0C;
+}
+
+/* ── References (card back): legend of tags, then one rounded card per entry ─ */
+.monster-related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+    color: #0C0C0C;
+}
+
+.monster-related-row {
+    display: flex;
+    align-items: center;
+    gap: 1.4mm;
+    padding: 0.7mm 1.6mm 0.7mm 1.4mm;
+    font-size: 5.5pt;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    border-radius: 1mm;
+    border-left: 0.9mm solid #888;
+}
+
+/* Legend: standalone tag row above the entries */
+.monster-related-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8mm 1.2mm;
+    margin-bottom: 0.4mm;
+    padding: 0 0.2mm;
+}
+
+.monster-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6mm;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 3.8pt;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    padding: 0.35mm 1.1mm;
+    border-radius: 1mm;
+    border: 0.1mm solid transparent;
+}
+
+.monster-rel-icon {
+    width: 2.2mm;
+    height: 2.2mm;
+    display: block;
+    flex: 0 0 auto;
+}
+
+.monster-related-glyph {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+.monster-related-row .monster-rel-icon {
+    width: 2.4mm;
+    height: 2.4mm;
+}
+
+.monster-related-name {
+    flex: 1 1 auto;
+    font-family: 'Lora', serif;
+    font-size: 6.5pt;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.monster-related-arrow {
+    flex: 0 0 auto;
+    align-self: center;
+    font-family: 'Cinzel', serif;
+    font-size: 8pt;
+    line-height: 1;
+    color: #7a4a20;
+    opacity: 0.6;
+}
+
+/* Category colors: glyph/text color (entry rows) + matching left spine */
+.rel-tag-stat-block { color: #8c2f2f; }
+.rel-row-stat-block { border-left-color: #8c2f2f; }
+.rel-tag-companion  { color: #2f5d3a; }
+.rel-row-companion  { border-left-color: #2f5d3a; }
+.rel-tag-magic-item { color: #2e5a68; }
+.rel-row-magic-item { border-left-color: #2e5a68; }
+.rel-tag-quest-item { color: #8a6215; }
+.rel-row-quest-item { border-left-color: #8a6215; }
+.rel-tag-default    { color: #555; }
+.rel-row-default    { border-left-color: #888; }
+
+/* Legend tags: solid fill in the category color, with a lighter tint for the
+   border/symbol/text on top — reads more clearly than tinted-on-paper text. */
+.monster-legend-item.rel-tag-stat-block { background: #8c2f2f; border-color: #f0b8b880; color: #f6d5d5; }
+.monster-legend-item.rel-tag-companion  { background: #2f5d3a; border-color: #b8e0c480; color: #d7f0dd; }
+.monster-legend-item.rel-tag-magic-item { background: #2e5a68; border-color: #b3dbe680; color: #d6eef4; }
+.monster-legend-item.rel-tag-quest-item { background: #8a6215; border-color: #f0d9a080; color: #f7e9c6; }
+.monster-legend-item.rel-tag-default    { background: #555; border-color: #ccc; color: #eee; }
+
+.npc-weapon-detail-tag.monster-related-row,
+.npc-loot-detail-tag.monster-related-row {
+    font-size: 6pt;
+    line-height: 1.2;
+}
+
+/* ── Inventory currency inputs (center-column form) ────────────────────── */
+.currency-fields-row {
+    display: flex;
+    gap: 6px;
+}
+
+.currency-input {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.currency-input label {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.currency-input input.form-control {
+    text-align: center;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+
+/* ============================================================================
+   Item cards
+   ============================================================================ */
+
+/* Rarity/type line under the item name (color set inline from rarity) */
+.item-type-line {
+    font-style: italic;
+    color: #fff;
+}
+
+.item-corner-emblem {
+    position: absolute;
+    top: 1mm;
+    left: 1mm;
+    width: 11mm;
+    height: 11mm;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.item-corner-emblem-gem,
+.item-corner-emblem-icon {
+    position: absolute;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.item-corner-emblem-gem {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0.4mm 0.8mm rgba(0, 0, 0, 0.35));
+}
+
+.item-corner-emblem-icon {
+    top: 50%;
+    left: 50%;
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0.25mm 0.5mm rgba(0, 0, 0, 0.3));
+}
+
+/* Cursed / Sentient marker chips over the artwork (front, bottom-right) */
+.item-flags-overlay {
+    position: absolute;
+    bottom: 1mm;
+    right: 1mm;
+    display: flex;
+    align-items: center;
+    gap: 1mm;
+}
+
+.item-flag {
+    font-family: 'Cinzel', serif;
+    font-size: 4.6pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+    padding: 0.5mm 1.5mm;
+    border-radius: 1mm;
+    border: 0.2mm solid rgba(255, 255, 255, 0.35);
+}
+
+.item-flag-cursed {
+    background: rgba(122, 22, 22, 0.85);
+}
+
+.item-flag-sentient {
+    background: rgba(52, 66, 122, 0.85);
+}
+
+.item-front-text-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+}
+
+.item-rich-text {
+    display: block;
+    margin-left: 0;
+    white-space: pre-line;
+}
+
+.item-flavour-text {
+    font-style: italic;
+}
+
+.item-flavour-inline-section {
+    margin: 0 2.5mm;
+    padding-bottom: 1mm;
+}
+
+.item-flavour-inline-divider {
+    height: 0.2mm;
+    background: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1mm;
+}
+
+.item-flavour-inline-text {
+    margin: 0;
+    color: #fff;
+    font-family: 'Lora', serif;
+    font-size: 6pt;
+    line-height: 1.25;
+    font-style: italic;
+    white-space: pre-line;
+    text-align: center;
+    text-shadow: 0 0.15mm 0 rgba(0, 0, 0, 0.5), 0 0.3mm 1px rgba(0, 0, 0, 0.35);
+}
+
+.item-detail-meta-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0.5mm;
+}
+
+.item-detail-meta-cell {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1mm 1.25mm;
+    color: #0C0C0C;
+    background-color: var(--card-paper-base);
+    background-image:
+        linear-gradient(180deg, var(--card-paper-highlight), var(--card-paper-shade)),
+        url('../assets/paper_background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, var(--card-paper-texture-size);
+    text-align: center;
+}
+
+.item-detail-meta-cell:first-child {
+    border-radius: 1.25mm 0 0 0;
+}
+
+.item-detail-meta-cell:last-child {
+    border-radius: 0 1.25mm 0 0;
+}
+
+.item-detail-meta-cell:only-child {
+    border-radius: 1.25mm 1.25mm 0 0;
+}
+
+.item-detail-meta-label {
+    font-family: 'Cinzel', serif;
+    font-size: 4.4pt;
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7a4a20;
+    margin-bottom: 0.35mm;
+}
+
+.item-detail-meta-value {
+    font-family: 'Lora', serif;
+    font-size: 5.4pt;
+    line-height: 1.2;
+    color: #0C0C0C;
+    overflow-wrap: anywhere;
+}
+
+/* Curse section header gets a red tint to stand out on the back */
+.item-curse-section .monster-traits-header {
+    color: #a03030;
+}
+
+.item-sentience-section .monster-traits-header {
+    color: #34427a;
+}

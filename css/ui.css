@@ -1,0 +1,2221 @@
+/* ===================================================================
+   RPG Card Generator — Dark Mode Theme
+   =================================================================== */
+
+/* ── Morvold Press logo (top-left of form column) ─────────────────── */
+#morvold-logo-link {
+    display:    inline-block;
+    padding:    16px 0 8px;
+    line-height: 0;
+}
+#morvold-logo {
+    height:     54px;
+    width:      auto;
+    opacity:    0.85;
+    transition: opacity 0.15s ease;
+}
+#morvold-logo-link:hover #morvold-logo,
+#morvold-logo-link:focus #morvold-logo {
+    opacity: 1;
+}
+
+/* ----- Colour palette variables ----- */
+:root {
+  --red-primary:   #FA364A;
+  --red-hover:     #F90B22;
+  --red-light:     #FA364A;
+  --red-soft:      #FB5C6B;
+  --red-muted:     #FD8A95;
+  --red-bg:        #FFF5F6;
+
+  --dark-deepest:  #080813;
+  --dark-deeper:   #0C0C13;
+  --dark-base:     #101014;
+  --dark-mid:      #2F2F34;
+  --dark-light:    #54545F;
+  --dark-text:     #F3F3F3;
+
+  --light-muted:   #958A8A;
+  --light-mid:     #BBB5B5;
+  --light-soft:    #E5E2E2;
+  --light-near:    #FFFEFE;
+  --light-white:   #FFFFFF;
+
+  --drawer-width:          400px;
+  --drawer-toggle-width:   40px;
+  --drawer-transition:     0.3s ease;
+}
+
+/* ----- Global ----- */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--dark-base);
+  background-image: url('https://morvoldpress.com/wp-content/uploads/2024/01/black-paper.png');
+  background-size: 250px 250px;
+  background-repeat: repeat;
+  color: var(--dark-text);
+  font-family: 'Lora', serif;
+}
+
+/* ----- Typography ----- */
+h1, h2, h3, h4, h5, h6,
+.panel-title, .section-title,
+#section-nav h4, #section-nav a,
+.modal-title {
+  font-family: 'Cinzel', serif;
+}
+
+h5 {
+  color: var(--light-mid);
+}
+
+/* ----- Headings for section boxes ----- */
+.section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--light-soft);
+  letter-spacing: 0.5px;
+}
+
+/* ----- Accordion sections (middle column) ----- */
+.section-accordion {
+  border-radius: 8px !important;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.section-accordion > .panel-heading {
+  background-color: var(--dark-deeper) !important;
+  background-image: none !important;
+  border-color: var(--dark-mid) !important;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* Remove bottom radius when panel is expanded */
+.section-accordion:has(> .panel-collapse.in) > .panel-heading,
+.section-accordion:has(> .panel-collapse.collapsing) > .panel-heading {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.section-accordion .panel-title a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  color: var(--light-soft);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+}
+
+.section-accordion .panel-title a:hover {
+  color: var(--light-white);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.section-accordion .panel-body {
+  padding: 1rem;
+}
+
+/* ----- Page Settings standalone section ----- */
+.page-settings-section {
+  background-color: var(--dark-deeper);
+  border: 1px solid var(--dark-mid);
+  border-radius: 8px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.page-settings-header {
+  background-color: var(--dark-mid);
+  padding: 0.5rem 1rem;
+}
+
+.page-settings-header .panel-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--light-soft);
+  margin: 0;
+}
+
+.page-settings-body {
+  padding: 1rem;
+}
+
+/* Completion counter badge */
+.section-counter {
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: var(--light-muted);
+  margin-left: auto;
+  background: var(--dark-mid);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.section-counter.has-content {
+  color: var(--light-white);
+  background: var(--red-primary);
+}
+
+.section-counter.is-complete {
+  color: var(--light-white);
+  background: var(--red-primary);
+  letter-spacing: 0.02em;
+}
+
+/* ── Section Complete button ─────────────────────────────────────────── */
+.section-complete-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.section-complete-btn {
+  background-image: none;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--light-muted);
+  font-size: 12px;
+  padding: 4px 16px;
+  border-radius: 6px;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.section-complete-btn:hover,
+.section-complete-btn:focus {
+  background-image: none;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--light-white);
+  outline: none;
+}
+.section-complete-btn.active {
+  background-image: none;
+  background-color: #FA364A;
+  border-color: #FA364A;
+  color: #fff;
+}
+.section-complete-btn.active:hover,
+.section-complete-btn.active:focus {
+  background-image: none;
+  background-color: #F90B22;
+  border-color: #F90B22;
+  color: #fff;
+}
+
+/* ----- Off-canvas sidebar drawer ----- */
+#sidebar-drawer {
+  position: fixed;
+  top: 0;
+  left: calc(-1 * var(--drawer-width));
+  width: var(--drawer-width);
+  height: 100vh;
+  background: var(--dark-deeper);
+  border-right: 1px solid var(--dark-mid);
+  overflow-y: auto;
+  padding: 16px;
+  z-index: 1040;
+  transition: left var(--drawer-transition);
+}
+
+html.drawer-open #sidebar-drawer {
+  left: 0;
+}
+
+/* ----- Drawer toggle bar ----- */
+#drawer-toggle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--drawer-toggle-width);
+  height: 100vh;
+  background: var(--dark-deeper);
+  border-right: 1px solid var(--dark-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1041;
+  transition: left var(--drawer-transition);
+  color: var(--light-muted);
+  font-size: 18px;
+}
+
+#drawer-toggle:hover {
+  color: var(--light-white);
+  background: var(--dark-base);
+}
+
+html.drawer-open #drawer-toggle {
+  left: var(--drawer-width);
+}
+
+/* ----- Main content push ----- */
+#main-content {
+  margin-left: var(--drawer-toggle-width);
+  transition: margin-left var(--drawer-transition);
+}
+
+html.drawer-open #main-content {
+  margin-left: calc(var(--drawer-width) + var(--drawer-toggle-width));
+}
+
+/* ----- Sidebar drawer section (Deck, etc.) ----- */
+.sidebar-section {
+  margin-bottom: 8px;
+}
+
+.sidebar-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--light-soft);
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--dark-mid);
+  letter-spacing: 0.5px;
+}
+
+.panel, .panel-default {
+  background-color: var(--dark-deeper);
+  border-color: var(--dark-mid);
+}
+
+.panel-default > .panel-heading,
+.panel-heading {
+  background-color: var(--dark-deeper) !important;
+  background-image: none !important;
+  border-color: var(--dark-mid) !important;
+  color: var(--light-soft);
+  padding: 1rem;
+}
+
+.panel-body {
+  background-color: var(--dark-deeper);
+  color: var(--dark-text);
+  padding: 1rem;
+}
+
+.panel-group .panel + .panel {
+  margin-top: 6px;
+}
+
+#monster-form-accordion .panel + .panel {
+  margin-top: 0.5rem;
+}
+
+#monster-form-accordion .panel-heading .panel-title a {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ----- Labels ----- */
+.control-label {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 0;
+  hyphens: auto;
+  word-wrap: break-word;
+  color: var(--light-mid);
+  font-family: 'Lora', serif;
+}
+
+/* ----- Preview container ----- */
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  background-color: transparent;
+  padding: 10px;
+}
+
+.preview-container .card {
+  margin-bottom: 10px;
+}
+
+/* ----- Form controls ----- */
+.form-control {
+  background-color: var(--dark-deepest);
+  border: 1px solid var(--dark-mid);
+  color: var(--light-soft);
+  font-family: 'Lora', serif;
+}
+
+.form-control:focus {
+  border-color: var(--dark-light);
+  box-shadow: 0 0 0 1px var(--dark-light);
+  background-color: var(--dark-deepest);
+  color: var(--light-soft);
+}
+
+.form-control::placeholder {
+  color: var(--light-muted);
+  opacity: 0.6;
+}
+
+/* Select dropdowns */
+select.form-control {
+  background-color: var(--dark-deepest);
+  color: var(--light-soft);
+}
+
+select.first-option-placeholder:has(option:first-child:checked) {
+  color: var(--light-muted);
+}
+select.first-option-placeholder:has(option:first-child:checked) option:not(:first-child) {
+  color: var(--light-soft);
+}
+select.first-option-placeholder:not(:has(option:first-child:checked)) option:first-child {
+  color: var(--light-muted);
+}
+
+select.form-control option {
+  background-color: var(--dark-deeper);
+  color: var(--light-soft);
+}
+
+/* Input group addons */
+.input-group-addon {
+  background-color: var(--dark-mid);
+  border-color: var(--dark-mid);
+  color: var(--light-mid);
+}
+
+.input-group-btn .btn {
+  border-color: var(--dark-mid);
+}
+
+/* ----- Buttons ----- */
+.btn-primary {
+  background-color: var(--red-primary);
+  border-color: var(--red-primary);
+  color: var(--light-white);
+  font-family: 'Lora', serif;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+.btn-primary.active {
+  background-color: var(--red-hover);
+  border-color: var(--red-hover);
+  color: var(--light-white);
+}
+
+.btn-danger {
+  background-color: var(--red-light);
+  border-color: var(--red-light);
+  color: var(--light-white);
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:active {
+  background-color: var(--red-soft);
+  border-color: var(--red-soft);
+  color: var(--light-white);
+}
+
+.btn-success {
+  background-color: var(--red-primary);
+  border-color: var(--red-primary);
+  color: var(--light-white);
+}
+
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+  background-color: var(--red-hover);
+  border-color: var(--red-hover);
+  color: var(--light-white);
+}
+
+.btn-default {
+  background-color: var(--dark-mid);
+  border-color: var(--dark-mid);
+  color: var(--light-soft);
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active {
+  background-color: var(--dark-light);
+  border-color: var(--dark-light);
+  color: var(--light-white);
+}
+
+/* ----- Deck card list ----- */
+.deck-cards-list {
+   flex: 1 1 auto;
+   min-height: 180px;
+   height: auto;
+   overflow-y: auto;
+   border: 1px solid var(--dark-mid);
+   background-color: var(--dark-deepest);
+   border-radius: 8px;
+}
+
+.deck-cards-list .radio {
+  padding: 0;
+  margin: 0;
+}
+
+.deck-cards-list .radio label {
+  display: block;
+  padding: 3.5px 7px;
+  color: var(--light-soft);
+}
+
+.deck-cards-list .radio label:hover {
+  background-color: var(--dark-mid);
+}
+
+.deck-cards-list .radio:has(:checked) label {
+  background-color: var(--red-primary);
+  color: var(--light-white);
+}
+
+.deck-cards-list .radio input {
+  width: 0;
+  height: 0;
+}
+
+/* ----- Form layout ----- */
+.form-group {
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+/* Remove the default Bootstrap margin-left that creates offset on inline checkboxes/radios */
+.radio-inline + .radio-inline,
+.checkbox-inline + .checkbox-inline {
+  margin-left: 0;
+}
+
+.form-horizontal {
+  margin-top: 10px;
+}
+
+.row-eq-height {
+  display: flex;
+}
+
+/* ----- Color input ----- */
+.color-input-addon {
+  border-right: 0;
+  border-radius: 8px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* ----- Global border-radius for buttons & inputs ----- */
+.btn {
+  border-radius: 8px;
+}
+
+.form-control {
+  border-radius: 8px;
+}
+
+.input-group .form-control:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.input-group .form-control:last-child,
+.input-group .input-group-btn:last-child .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.input-group-btn .btn {
+  border-radius: 8px;
+}
+
+.input-group-btn:last-child .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.input-group-btn:first-child .btn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ----- Slim buttons row ----- */
+.slim-buttons-row > div {
+  padding-left: 7.5px;
+  padding-right: 7.5px;
+}
+
+.slim-buttons-row .btn {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* ----- Utility padding ----- */
+.pl-1 { padding-left: 4px; }
+.pr-1 { padding-right: 4px; }
+.px-1 { padding-left: 4px; padding-right: 4px; }
+
+/* ----- Move buttons ----- */
+.move-button {
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  font-size: 32px;
+  line-height: 32px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+/* ----- Dropdown menus ----- */
+.dropdown-menu {
+  background-color: var(--dark-deeper);
+  border-color: var(--dark-mid);
+}
+
+.dropdown-menu > li > a {
+  padding-left: 35px;
+  position: relative;
+  color: var(--light-soft);
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  background-color: var(--dark-mid);
+  color: var(--light-white);
+}
+
+.dropdown-menu a > span {
+  position: absolute;
+  left: 5px;
+  background-color: #000;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 24px;
+  height: 24px;
+  background-size: auto 90%;
+  top: 50%;
+  margin-top: -12px;
+}
+
+/* ----- Card actions ----- */
+#card-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#card-actions h4 {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.action-group {
+  border: 1px solid var(--dark-mid);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.action-button {
+  margin: 2px;
+}
+
+/* ----- Toast animation ----- */
+@keyframes slideInFromRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+.toast-animate {
+  animation: slideInFromRight 0.4s ease-out;
+}
+
+/* ----- Lock addon (checkbox disguised as icon) ----- */
+label.lock-addon input {
+  display: none;
+}
+
+label.lock-addon {
+  cursor: pointer;
+  user-select: none;
+}
+
+label.lock-addon::before {
+  content: "🔓";
+}
+
+label.lock-addon:has(input:checked)::before {
+  content: "🔒";
+}
+
+/* ----- Separators ----- */
+.card-fields-groups-separator {
+  border-top-color: var(--dark-mid);
+}
+
+hr {
+  border-color: var(--dark-mid);
+}
+
+/* ----- Modal (dark) ----- */
+.modal-content {
+  background-color: var(--dark-deeper);
+  border-color: var(--dark-mid);
+  color: var(--dark-text);
+}
+
+.modal-header {
+  border-bottom-color: var(--dark-mid);
+}
+
+.modal-footer {
+  border-top-color: var(--dark-mid);
+}
+
+.modal-title {
+  color: var(--light-soft);
+}
+
+.close {
+  color: var(--light-muted);
+  opacity: 0.8;
+  text-shadow: none;
+}
+
+.close:hover {
+  color: var(--light-white);
+}
+
+/* ----- Links ----- */
+a {
+  color: var(--red-primary);
+}
+
+a:hover, a:focus {
+  color: var(--red-hover);
+}
+
+/* ----- Checkbox / radio labels ----- */
+.checkbox label,
+.radio label {
+  color: var(--light-soft);
+}
+
+/* ----- Checkbox accent colour ----- */
+input[type="checkbox"] {
+  accent-color: #FA364A;
+}
+
+/* ----- Total card count text ----- */
+#total-card-count {
+  color: var(--light-muted);
+  font-size: 13px;
+}
+
+/* ----- Scrollbar styling ----- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-mid);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-light);
+}
+
+/* ----- Middle column scroll behaviour ----- */
+#monster-form-sections {
+  scroll-behavior: smooth;
+}
+
+/* ----- Misc Bootstrap overrides for dark ----- */
+.well {
+  background-color: var(--dark-deeper);
+  border-color: var(--dark-mid);
+  color: var(--dark-text);
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > td {
+  border-color: var(--dark-mid);
+  color: var(--dark-text);
+}
+
+.nav-tabs {
+  border-bottom-color: var(--dark-mid);
+}
+
+.nav-tabs > li > a {
+  color: var(--light-mid);
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  background-color: var(--dark-deeper);
+  border-color: var(--dark-mid);
+  color: var(--dark-text);
+}
+
+/* Ensure the page header / container is transparent */
+.container-fluid {
+  background: transparent;
+}
+
+/* Override Bootstrap text-muted for dark mode */
+.text-muted {
+  color: var(--light-muted) !important;
+}
+
+/* ----- Sticky preview column ----- */
+@media (min-width: 1200px) {
+  .container-fluid > .row {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .col-lg-5:last-child {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding-top: 10px;
+  }
+}
+
+/* ----- Remove Bootstrap's default .row negative margins globally ----- */
+.row,
+.form-horizontal .form-group {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ----- Field flow: natural inline layout ----- */
+.panel-body .form-horizontal {
+  margin-top: 0;
+}
+
+.panel-body .form-group {
+  margin-bottom: 8px;
+}
+
+.panel-body .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.panel-body .row > [class*="col-"] {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.panel-body .control-label {
+  padding-top: 6px;
+  margin-bottom: 2px;
+}
+
+/* ----- Narrow number inputs ----- */
+input[type="number"].form-control {
+  min-width: 5em;
+  display: inline-block;
+  text-align: center;
+}
+
+/* When number inputs are inside col-sm-9 etc., don't force full width */
+.section-accordion input[type="number"].form-control {
+  flex: 0 0 auto;
+}
+
+/* ----- Checklist alignment fix ----- */
+/* Remove the left offset that pushes the first row of checkboxes */
+.section-accordion [id$="-cb"].row,
+.section-accordion [id$="-cb"] {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0;
+}
+
+.section-accordion [id$="-cb"] .checkbox {
+  margin: 0;
+  padding: 4px 8px;
+  display: inline-block;
+}
+
+.section-accordion [id$="-cb"] .checkbox label {
+  padding-left: 20px;
+  white-space: nowrap;
+}
+
+/* ----- Panel group for column 2 accordion ----- */
+#monster-form-accordion {
+  margin-bottom: 0;
+}
+
+#monster-form-accordion .panel + .panel {
+  margin-top: 0;
+}
+
+/* ----- Section description text ----- */
+.section-description {
+  font-size: 13px;
+  color: var(--light-muted);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* ----- Saving throw bonus row ----- */
+.st-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 6px;
+}
+
+.st-row .checkbox-inline {
+  flex: 1;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.st-bonus-addon,
+.skill-bonus-addon {
+  min-width: 3.5em;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* ----- Field hint button ----- */
+.field-hint-btn {
+  background: none;
+  border: none;
+  padding: 0 0 0 4px;
+  cursor: pointer;
+  color: var(--light-muted);
+  font-size: 12px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.field-hint-btn:hover {
+  color: var(--red-primary);
+}
+
+.section-hint-trigger {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+}
+
+.field-hint-table th,
+.field-hint-table td {
+  text-align: center !important;
+}
+
+.field-hint-note {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--red-primary);
+  background-color: var(--dark-mid);
+  color: var(--light-muted);
+  font-size: 12px;
+  border-radius: 0 4px 4px 0;
+}
+
+.item-repeater-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.item-repeater-btn {
+  background-image: none;
+  background-color: #FFFFFF1A;
+  border: 1px solid transparent;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 16px;
+  border-radius: 6px;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.item-repeater-btn:hover,
+.item-repeater-btn:focus,
+.item-repeater-btn:active {
+  background-image: none;
+  background-color: #FFFFFF33;
+  border: 1px solid #FFFFFF;
+  color: #fff;
+  outline: none;
+}
+
+.item-repeater-btn-danger {
+  background-image: none;
+  background-color: rgba(249, 11, 34, 0.25);
+  border: 1px solid #F90B22;
+  color: #fff;
+}
+
+.item-repeater-btn-danger:hover,
+.item-repeater-btn-danger:focus,
+.item-repeater-btn-danger:active {
+  background-image: none;
+  background-color: rgba(249, 11, 34, 0.45);
+  border: 1px solid #F90B22;
+  color: #fff;
+  outline: none;
+}
+
+.item-feature-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.monster-entry-repeater-field-label {
+  display: block;
+  margin: 0 0 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--light-muted);
+}
+
+.monster-entry-repeater-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.monster-action-card {
+  position: relative;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  overflow: hidden;
+  transition: border-color 0.15s, background-color 0.15s, opacity 0.15s;
+}
+
+.monster-action-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.monster-action-card.is-active {
+  border-color: rgba(250, 54, 74, 0.75);
+  background: rgba(250, 54, 74, 0.11);
+}
+
+.monster-action-card.is-dragging {
+  opacity: 0.55;
+}
+
+.monster-action-card.is-drop-before::before,
+.monster-action-card.is-drop-after::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: var(--red-primary);
+  border-radius: 999px;
+  z-index: 3;
+}
+
+.monster-action-card.is-drop-before::before {
+  top: 0;
+}
+
+.monster-action-card.is-drop-after::after {
+  bottom: 0;
+}
+
+.monster-action-card-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--light-soft);
+}
+
+.monster-action-card-summary:focus {
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  outline-offset: -2px;
+}
+
+.monster-action-card-grip {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: grab;
+}
+
+.monster-action-card-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monster-action-card-tag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 7px 3px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.monster-action-card-tag-attack {
+  color: #f2b766;
+  background: rgba(96, 57, 18, 0.65);
+  border-color: rgba(242, 183, 102, 0.32);
+}
+
+.monster-action-card-tag-feature {
+  color: #7fb1ff;
+  background: rgba(23, 44, 83, 0.65);
+  border-color: rgba(127, 177, 255, 0.28);
+}
+
+.monster-action-card-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: var(--light-white);
+}
+
+.monster-action-card-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.monster-action-card-icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--light-muted);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.monster-action-card-icon-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.monster-action-card-icon-btn:hover,
+.monster-action-card-icon-btn:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: var(--light-white);
+  outline: none;
+}
+
+.monster-action-delete-btn:hover,
+.monster-action-delete-btn:focus {
+  background: rgba(249, 11, 34, 0.16);
+  border-color: rgba(249, 11, 34, 0.5);
+}
+
+.monster-action-card-detail {
+  padding: 0 10px 10px;
+}
+
+.monster-action-card-detail .monster-entry-row {
+  margin: 0;
+}
+
+.monster-action-card-detail .monster-entry-row > .control-label {
+  display: none;
+}
+
+.monster-action-card-detail .monster-entry-row > .col-sm-9 {
+  float: none;
+  width: 100%;
+  padding: 0;
+}
+
+.monster-action-card-detail .entry-repeater-remove-btn {
+  display: none;
+}
+
+.npc-inventory-card .monster-action-card-summary {
+  cursor: pointer;
+}
+
+#sectionBonusActions .form-group:has(#monster-inventory-weapons),
+#sectionBonusActions .form-group:has(#monster-inventory-loot) {
+  display: none;
+}
+
+#sectionBonusActions .inventory-repeater-description + .section-description {
+  display: none;
+}
+
+.npc-inventory-detail-fields {
+  padding-top: 0;
+}
+
+.npc-inventory-meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.npc-inventory-meta-grid .form-control {
+  min-width: 0;
+}
+
+.item-feature-remove-btn,
+.entry-repeater-remove-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--light-muted);
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.item-feature-remove-btn:hover,
+.item-feature-remove-btn:focus,
+.item-feature-remove-btn:active,
+.entry-repeater-remove-btn:hover,
+.entry-repeater-remove-btn:focus,
+.entry-repeater-remove-btn:active {
+  background: rgba(249, 11, 34, 0.12);
+  border-color: rgba(249, 11, 34, 0.45);
+  color: #fff;
+  outline: none;
+}
+
+.item-repeater-empty {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: var(--light-muted);
+  font-style: italic;
+}
+
+/* ----- Skill select proficiency styling ----- */
+.skill-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-select-wrapper .skill-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--light-soft);
+}
+
+.skill-select-wrapper .skill-select {
+  flex: 1;
+}
+
+select.skill-select.skill-proficient,
+select.skill-select.skill-half,
+select.skill-select.skill-expertise {
+  background-color: #FA364A !important;
+  color: var(--light-white) !important;
+  font-weight: 700;
+}
+
+
+/* ----- WordPress Media Picker ----- */
+#wp-media-picker-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+#wp-media-picker-overlay.active {
+  display: flex;
+}
+#wp-media-picker-modal {
+  background: var(--dark-mid);
+  border: 1px solid var(--dark-border);
+  border-radius: 6px;
+  width: 700px;
+  max-width: 95vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#wp-media-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--dark-border);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--light-white);
+  flex-shrink: 0;
+}
+#wp-media-picker-close {
+  background: none;
+  border: none;
+  color: var(--light-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+#wp-media-picker-close:hover { color: var(--light-white); }
+#wp-media-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+#wp-media-picker-loading {
+  grid-column: 1 / -1;
+  padding: 40px;
+  text-align: center;
+  color: var(--light-muted);
+  font-size: 13px;
+}
+.wp-media-thumb-wrapper {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.wp-media-thumb-wrapper:hover { border-color: var(--red-primary); }
+.wp-media-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+#wp-media-picker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-top: 1px solid var(--dark-border);
+  flex-shrink: 0;
+}
+#wp-media-picker-page-info {
+  font-size: 12px;
+  color: var(--light-muted);
+}
+
+/* ----- Media Picker: Breadcrumb & Folder Tiles ----- */
+#wp-media-picker-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--dark-border);
+  font-size: 12px;
+  color: var(--light-muted);
+  flex-shrink: 0;
+  min-height: 36px;
+}
+#wp-media-picker-breadcrumb:empty {
+  display: none;
+}
+.wp-media-crumb {
+  cursor: pointer;
+  color: var(--red-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+}
+.wp-media-crumb:hover { text-decoration: underline; }
+.wp-media-crumb-sep {
+  color: var(--light-muted);
+  pointer-events: none;
+}
+.wp-media-crumb-current {
+  color: var(--light-white);
+  font-weight: 600;
+}
+.wp-media-folder-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  background: var(--dark-deep);
+  border: 1px solid var(--dark-border);
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 90px;
+}
+.wp-media-folder-tile:hover {
+  border-color: var(--red-primary);
+  background: var(--dark-mid);
+}
+.wp-media-folder-tile i {
+  font-size: 26px;
+  color: var(--red-primary);
+}
+.wp-media-folder-tile-name {
+  font-size: 12px;
+  color: var(--light-white);
+  word-break: break-word;
+  line-height: 1.3;
+}
+.wp-media-folder-tile-count {
+  font-size: 11px;
+  color: var(--light-muted);
+}
+
+/* ── Cards Per Page display ─────────────────────────────────────────── */
+.cards-per-page-display {
+    background: transparent !important;
+    cursor: default !important;
+    color: var(--light-muted) !important;
+    pointer-events: none;
+    font-style: italic;
+}
+
+/* ── Creature artwork drag-and-drop zone ────────────────────────────── */
+.artwork-drop-zone {
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 20px 12px;
+    text-align: center;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.04);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.artwork-drop-zone:hover,
+.artwork-drop-zone.drag-over {
+    border-color: rgba(255, 255, 255, 0.55);
+    background-color: rgba(255, 255, 255, 0.09);
+}
+.artwork-drop-zone-icon {
+    font-size: 26px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 8px;
+}
+.artwork-drop-zone-text {
+    color: var(--light-white);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 3px;
+}
+.artwork-drop-zone-subtext {
+    color: var(--light-muted);
+    font-size: 11px;
+    margin: 0 0 12px;
+}
+.artwork-drop-zone-btn {
+    background-image: none;
+    background-color: #FFFFFF1A;
+    border: 1px solid transparent;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 18px;
+    border-radius: 6px;
+}
+.artwork-drop-zone-btn:hover,
+.artwork-drop-zone-btn:focus,
+.artwork-drop-zone-btn:active {
+    background-image: none;
+    background-color: #FFFFFF33;
+    border: 1px solid #FFFFFF;
+    color: #fff;
+}
+
+/* ── Custom button styles ────────────────────────────────────────────── */
+
+/* Generate + Export Card as PNG: solid red, no gradient */
+#button-generate {
+    background-image: none;
+    background-color: #FA364A;
+    border-color: #FA364A;
+    color: #fff;
+}
+#button-generate:hover, #button-generate:focus, #button-generate:active {
+    background-image: none;
+    background-color: #F90B22;
+    border-color: #F90B22;
+    color: #fff;
+}
+
+/* New / Duplicate / Copy / Copy All / Paste / Sort / Map/Filter:
+   white outline, subtle white fill, no gradient */
+#button-add-card,
+#button-duplicate-card,
+#button-copy-card,
+#button-copy-all,
+#button-paste-card,
+#button-sort,
+#button-filter {
+    background-image: none;
+    background-color: #FFFFFF1A;
+    border: 1px solid transparent;
+    color: #fff;
+}
+#button-add-card:hover,    #button-add-card:focus,    #button-add-card:active,
+#button-duplicate-card:hover, #button-duplicate-card:focus, #button-duplicate-card:active,
+#button-copy-card:hover,   #button-copy-card:focus,   #button-copy-card:active,
+#button-copy-all:hover,    #button-copy-all:focus,    #button-copy-all:active,
+#button-paste-card:hover,  #button-paste-card:focus,  #button-paste-card:active,
+#button-sort:hover,        #button-sort:focus,        #button-sort:active,
+#button-filter:hover,      #button-filter:focus,      #button-filter:active {
+    background-image: none;
+    background-color: #FFFFFF33;
+    border: 1px solid #FFFFFF;
+    color: #fff;
+}
+
+/* Browse Media Library: same style as the utility sidebar buttons */
+#browse-wp-media-btn {
+    background-image: none;
+    background-color: #FFFFFF1A;
+    border: 1px solid transparent;
+    color: #fff;
+}
+#browse-wp-media-btn:hover, #browse-wp-media-btn:focus, #browse-wp-media-btn:active {
+    background-image: none;
+    background-color: #FFFFFF33;
+    border: 1px solid #FFFFFF;
+    color: #fff;
+}
+
+/* Delete / Delete All: red outline, transparent-ish red fill → deeper on hover */
+#button-delete-card,
+#button-clear {
+    background-image: none;
+    background-color: rgba(249, 11, 34, 0.25);
+    border: 1px solid #F90B22;
+    color: #fff;
+}
+#button-delete-card:hover, #button-delete-card:focus, #button-delete-card:active,
+#button-clear:hover,       #button-clear:focus,       #button-clear:active {
+    background-image: none;
+    background-color: rgba(249, 11, 34, 0.50);
+    border: 1px solid #F90B22;
+    color: #fff;
+}
+
+/* ── SRD Library sidebar button ─────────────────────────────────────── */
+#button-srd-library {
+    background-image: none;
+    background-color: var(--dark-mid);
+    border: 1px solid var(--dark-mid);
+    color: var(--light-soft);
+    font-family: 'Lora', serif;
+}
+#button-srd-library:hover,
+#button-srd-library:focus,
+#button-srd-library:active {
+    background-image: none;
+    background-color: var(--dark-light);
+    border-color: var(--dark-light);
+    color: var(--light-white);
+}
+
+/* ── SRD Monster Library Modal ──────────────────────────────────────── */
+/* Background, border, and close button inherit from the global .modal-content / .modal-header / .close rules */
+.srd-modal-subtitle {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: var(--light-muted);
+}
+.srd-modal-body {
+    padding: 16px;
+}
+
+/* Search + filter row */
+.srd-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.srd-search-input,
+.srd-type-select {
+    background-color: var(--dark-deepest) !important;
+    border: 1px solid var(--dark-mid) !important;
+    color: var(--light-soft) !important;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+}
+/* "Has Art" filter toggle */
+.srd-art-filter-btn {
+    background-color: var(--dark-mid);
+    border: 1px solid var(--dark-mid);
+    color: var(--light-muted);
+    background-image: none;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.srd-art-filter-btn:hover,
+.srd-art-filter-btn:focus {
+    background-color: var(--dark-light);
+    border-color: var(--dark-light);
+    color: var(--light-white);
+    background-image: none;
+    outline: none;
+}
+.srd-art-filter-btn.active {
+    background-color: var(--red-primary);
+    border-color: var(--red-primary);
+    color: var(--light-white);
+    background-image: none;
+}
+.srd-art-filter-btn.active:hover,
+.srd-art-filter-btn.active:focus {
+    background-color: var(--red-hover);
+    border-color: var(--red-hover);
+    color: var(--light-white);
+    background-image: none;
+}
+
+/* Art indicator icon in table rows */
+.srd-art-icon {
+    color: var(--red-muted);
+    font-size: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
+    opacity: 0.85;
+}
+
+.srd-search-input::placeholder {
+    color: var(--light-muted);
+    opacity: 0.7;
+}
+.srd-search-input:focus,
+.srd-type-select:focus {
+    border-color: var(--dark-light) !important;
+    outline: none;
+    box-shadow: none;
+}
+.srd-search-input {
+    flex: 1;
+}
+.srd-type-select {
+    width: 180px;
+    flex: 0 0 auto;
+}
+.srd-type-select option {
+    background-color: var(--dark-deeper);
+    color: var(--light-soft);
+}
+
+/* Scrollable monster table */
+.srd-table-wrap {
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid var(--dark-mid);
+    border-radius: 8px;
+}
+.srd-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--light-soft);
+    border-collapse: collapse;
+}
+.srd-table thead th {
+    background: var(--dark-mid);
+    color: var(--light-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--dark-light);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-family: 'Cinzel', serif;
+}
+.srd-table tbody td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+    vertical-align: middle;
+}
+.srd-cr-col,
+.srd-size-col {
+    width: 60px;
+}
+.srd-cr-cell {
+    font-weight: 600;
+    color: var(--red-muted);
+}
+.srd-monster-row {
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.srd-monster-row:hover {
+    background-color: var(--dark-mid) !important;
+    color: var(--light-white);
+}
+.srd-monster-row.srd-selected {
+    background-color: rgba(250, 54, 74, 0.3) !important;
+    color: var(--light-white);
+}
+.srd-monster-row.srd-selected td {
+    color: var(--light-white);
+}
+.srd-empty {
+    text-align: center;
+    color: var(--light-muted);
+    padding: 24px !important;
+    font-style: italic;
+}
+
+/* Scrollbar styling for the table */
+.srd-table-wrap::-webkit-scrollbar {
+    width: 6px;
+}
+.srd-table-wrap::-webkit-scrollbar-track {
+    background: var(--dark-deepest);
+}
+.srd-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--dark-mid);
+    border-radius: 3px;
+}
+/* ── /SRD Monster Library Modal ─────────────────────────────────────── */
+
+/* ── Modal footer buttons (SRD + Foundry + JSON Builder) ────────────── */
+
+/* "Load into Current Card" / "Add to Deck" — solid red */
+#srd-load-btn,
+#srd-item-load-btn,
+#foundry-load-btn,
+#jsonbuilder-load-btn {
+    background-color: #FA364A;
+    border: 1px solid #FA364A;
+    color: #fff;
+    background-image: none;
+}
+#srd-load-btn:hover, #srd-load-btn:focus, #srd-load-btn:active,
+#srd-item-load-btn:hover, #srd-item-load-btn:focus, #srd-item-load-btn:active,
+#foundry-load-btn:hover, #foundry-load-btn:focus, #foundry-load-btn:active,
+#jsonbuilder-load-btn:hover, #jsonbuilder-load-btn:focus, #jsonbuilder-load-btn:active {
+    background-color: #F90B22;
+    border-color: #F90B22;
+    color: #fff;
+    background-image: none;
+}
+
+/* "Create as New Card" — ghost white */
+#srd-load-new-btn,
+#srd-item-load-new-btn,
+#foundry-load-new-btn {
+    background-color: #FFFFFF1A;
+    border: 1px solid #FFFFFF;
+    color: #fff;
+    background-image: none;
+}
+#srd-load-new-btn:hover, #srd-load-new-btn:focus, #srd-load-new-btn:active,
+#srd-item-load-new-btn:hover, #srd-item-load-new-btn:focus, #srd-item-load-new-btn:active,
+#foundry-load-new-btn:hover, #foundry-load-new-btn:focus, #foundry-load-new-btn:active {
+    background-color: #FFFFFF33;
+    border-color: #FFFFFF;
+    color: #fff;
+    background-image: none;
+}
+
+/* "Cancel" — translucent red */
+.srd-modal-footer .btn-default {
+    background-color: #F90B2240;
+    border: 1px solid #F90B22;
+    color: #fff;
+    background-image: none;
+}
+.srd-modal-footer .btn-default:hover,
+.srd-modal-footer .btn-default:focus,
+.srd-modal-footer .btn-default:active {
+    background-color: #F90B2280;
+    border-color: #F90B22;
+    color: #fff;
+    background-image: none;
+}
+
+/* ── Foundry Import Modal ────────────────────────────────────────────── */
+/* Background, border, and close button inherit from the global .modal-content / .modal-header / .close rules */
+
+/* Drop zone */
+.foundry-drop-zone {
+    border: 1px dashed var(--dark-light);
+    border-radius: 8px;
+    padding: 20px 16px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-muted);
+    font-family: 'Lora', serif;
+}
+.foundry-drop-zone:hover,
+.foundry-drop-zone.drag-over {
+    border-color: var(--light-soft);
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--light-soft);
+}
+.foundry-drop-zone.foundry-drop-loaded {
+    border-color: rgba(100, 210, 100, 0.5);
+    background-color: rgba(100, 210, 100, 0.05);
+    cursor: default;
+    color: var(--light-soft);
+}
+.foundry-drop-filename {
+    color: #8de88d;
+    font-size: 13px;
+}
+
+/* Or divider */
+.foundry-or-divider {
+    text-align: center;
+    color: var(--light-muted);
+    font-size: 11px;
+    margin: 8px 0;
+    letter-spacing: 0.05em;
+}
+
+/* Paste area */
+.foundry-paste-area {
+    background-color: var(--dark-deepest) !important;
+    border: 1px solid var(--dark-mid) !important;
+    color: var(--light-soft) !important;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    resize: vertical;
+    border-radius: 8px;
+}
+.foundry-paste-area:focus {
+    border-color: var(--dark-light) !important;
+    box-shadow: none;
+    outline: none;
+}
+
+/* Parsed preview bar */
+.foundry-preview {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Lora', serif;
+}
+.foundry-preview-ok {
+    background: rgba(100, 210, 100, 0.12);
+    border: 1px solid rgba(100, 210, 100, 0.35);
+    color: #8de88d;
+}
+.foundry-preview-err {
+    background: rgba(250, 54, 74, 0.12);
+    border: 1px solid rgba(250, 54, 74, 0.35);
+    color: var(--red-soft);
+}
+/* ── /Foundry Import Modal ───────────────────────────────────────────── */
+
+/* ── Sidebar group labels ────────────────────────────────────────────── */
+.sidebar-group-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--light-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 14px 0 4px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sidebar-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sidebar-tooltip-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--light-muted);
+    font-size: 11px;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s;
+    vertical-align: middle;
+}
+.sidebar-tooltip-btn:hover,
+.sidebar-tooltip-btn:focus {
+    opacity: 1;
+    color: var(--light-soft);
+    outline: none;
+}
+
+/* ── Import buttons ──────────────────────────────────────────────────── */
+.sidebar-import-btn {
+    background-color: var(--dark-mid);
+    border: 1px solid var(--dark-mid);
+    color: var(--light-soft);
+    background-image: none;
+    text-align: left;
+    font-family: 'Lora', serif;
+}
+.sidebar-import-btn:hover,
+.sidebar-import-btn:focus,
+.sidebar-import-btn:active {
+    background-color: var(--dark-light);
+    border-color: var(--dark-light);
+    color: var(--light-white);
+    background-image: none;
+}
+
+/* ── Preview action bar (sticky Generate/Export buttons) ────────────── */
+.preview-action-bar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background-color: var(--dark-base);
+    background-image: url('https://morvoldpress.com/wp-content/uploads/2024/01/black-paper.png');
+    background-size: 250px 250px;
+    border-bottom: 1px solid var(--dark-mid);
+}
+
+.preview-action-btn {
+    flex: 1;
+    background-image: none;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Generate Deck (PDF) — solid red */
+.preview-action-btn--primary {
+    background-color: var(--red-primary);
+    border-color: var(--red-primary);
+    color: var(--light-white);
+}
+.preview-action-btn--primary:hover,
+.preview-action-btn--primary:focus,
+.preview-action-btn--primary:active {
+    background-color: var(--red-hover);
+    border-color: var(--red-hover);
+    color: var(--light-white);
+    background-image: none;
+}
+
+/* Generate Card (PNG) — ghost/outline */
+.preview-action-btn--secondary {
+    background-color: #FFFFFF1A;
+    border: 1px solid var(--light-white);
+    color: var(--light-white);
+}
+.preview-action-btn--secondary:hover,
+.preview-action-btn--secondary:focus,
+.preview-action-btn--secondary:active {
+    background-color: #FFFFFF33;
+    border-color: var(--light-white);
+    color: var(--light-white);
+    background-image: none;
+}
+
+.preview-action-btn--tertiary {
+    background-color: rgba(250, 54, 74, 0.16);
+    border: 1px solid rgba(250, 54, 74, 0.72);
+    color: #ffd8dd;
+}
+
+.preview-action-btn--tertiary:hover,
+.preview-action-btn--tertiary:focus,
+.preview-action-btn--tertiary:active {
+    background-color: rgba(250, 54, 74, 0.28);
+    border-color: #FA364A;
+    color: #fff1f3;
+    background-image: none;
+}
+
+/* ── Card Zoom Button (appears on hover over preview cards) ─────────── */
+#preview-container .card {
+    position: relative; /* anchor for the absolutely-placed zoom button */
+}
+.card-zoom-btn {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    cursor: zoom-in;
+    z-index: 10;
+    padding: 0;
+    line-height: 1;
+    transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+    pointer-events: auto;
+}
+#preview-container .card:hover .card-zoom-btn {
+    opacity: 1;
+}
+.card-zoom-btn:hover {
+    background: rgba(0, 0, 0, 0.82);
+    border-color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── Card Lightbox Overlay ──────────────────────────────────────────── */
+.card-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.card-lightbox.active {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* Dark backdrop */
+.clb-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    cursor: zoom-out;
+}
+
+/* Container sits above the backdrop */
+.clb-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: scale(0.94);
+    transition: transform 0.2s ease;
+}
+.card-lightbox.active .clb-container {
+    transform: scale(1);
+}
+
+/* Close button — fixed to top-right of viewport */
+.clb-close {
+    position: fixed;
+    top: 14px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s;
+}
+.clb-close:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Card wrap — width/height set dynamically by JS to match scaled card */
+.clb-wrap {
+    position: relative;
+    overflow: visible;
+}
+
+/* Front / Back toggle nav */
+.clb-nav {
+    display: flex;
+    gap: 8px;
+}
+.clb-nav-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    padding: 6px 24px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.clb-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+.clb-nav-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Prevent body scroll while lightbox is open */
+body.lightbox-open {
+    overflow: hidden;
+}
+
+.sidebar-accordion-toggle,
+.sidebar-accordion-toggle.collapsed {
+    padding: 16px;
+}
+
+.panel-body.sidebar-manage-panel-body {
+    padding: 16px;
+}
+/* ── /Card Lightbox Overlay ─────────────────────────────────────────── */
+
+/* ============================================================================
+   Deck list card-type chips
+   ============================================================================ */
+
+.deck-type-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    padding: 5px 9px 4px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.deck-type-npc {
+    background: linear-gradient(180deg, #1f2535 0%, #151a27 100%);
+    border-color: #2e3f5f;
+    color: #4b78db;
+}
+
+.deck-type-creature {
+    background: linear-gradient(180deg, #202d22 0%, #162018 100%);
+    border-color: #325339;
+    color: #63bb79;
+}
+
+.deck-type-item {
+    background: linear-gradient(180deg, #31251b 0%, #231912 100%);
+    border-color: #6a4d25;
+    color: #c59a4a;
+}
+
+/* Sections checklist in the Card panel */
+#card-sections-cb label.checkbox-inline {
+    margin-left: 0;
+    font-size: 13px;
+}
+
+/* Grouped-section subheader inside the checklist (e.g. "Combat Stats") */
+.section-checklist-subheader {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+    margin: 8px 0 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 2px;
+}
+
+/* Required (core) sections: shown checked but locked */
+#card-sections-cb label.section-required {
+    opacity: 0.72;
+    cursor: default;
+}
+
+#card-sections-cb label.section-required input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.section-required-lock {
+    font-size: 10px;
+    margin-left: 4px;
+    opacity: 0.6;
+    vertical-align: baseline;
+}

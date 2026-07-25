@@ -1,0 +1,43 @@
+body {
+    padding-top: 20px;
+}
+
+#documentation-container {
+    margin-top: 20px;
+}
+
+.category-container {
+    margin-bottom: 30px;
+}
+
+.category-title {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.action-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.action-table th,
+.action-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.action-table th {
+    background-color: #f5f5f5;
+}
+
+.action-table .action-name {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.action-table .action-example {
+    font-family: monospace;
+    white-space: pre-wrap;
+}
