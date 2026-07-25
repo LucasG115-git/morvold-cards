@@ -666,6 +666,7 @@
 
 .item-rarity-line {
     margin: 0 0 0.6mm 0;
+    color: #fff;
 }
 
 /* Kept for any other badge grouping; overlay uses .monster-badges-overlay */
@@ -1664,4 +1665,16 @@
 
 .item-sentience-section .monster-traits-header {
     color: #34427a;
+}
+
+.item-sentience-copy p {
+    margin: 0 0 1.2mm;
+}
+
+.item-sentience-copy p:last-child {
+    margin-bottom: 0;
+}
+
+.item-sentience-notes {
+    white-space: pre-line;
 }

@@ -53,24 +53,24 @@
     <script type="text/javascript" src="js/fields/fields_deck.js"></script>
     <script type="text/javascript" src="js/fields/fields_page.js"></script>
     <script type="text/javascript" src="js/fields/fields_default.js"></script>
-    <script type="text/javascript" src="js/fields/fields_card.js?v=npc30"></script>
+    <script type="text/javascript" src="js/fields/fields_card.js?v=npc31"></script>
     <script type="text/javascript" src="js/monster-icon-data.js"></script>
-    <script type="text/javascript" src="js/cards.js?v=npc30"></script>
+    <script type="text/javascript" src="js/cards.js?v=npc31"></script>
     <script type="text/javascript" src="js/monster-computed.js"></script>
     <script type="text/javascript" src="js/colors.js"></script>
     <script type="text/javascript" src="js/icons.js"></script>
     <script type="text/javascript" src="js/doc_parser.js"></script>
     <script type="text/javascript" src="js/srd_data.js"></script>
-    <script type="text/javascript" src="js/srd-items.js?v=npc30"></script>
-    <script type="text/javascript" src="js/srd-items-data.js?v=npc30"></script>
-    <script type="text/javascript" src="js/item-art-data.js?v=npc30"></script>
-    <script type="text/javascript" src="js/srd-import.js?v=npc30"></script>
-    <script type="text/javascript" src="js/srd-items-library.js?v=npc30"></script>
+    <script type="text/javascript" src="js/srd-items.js?v=npc31"></script>
+    <script type="text/javascript" src="js/srd-items-data.js?v=npc31"></script>
+    <script type="text/javascript" src="js/item-art-data.js?v=npc31"></script>
+    <script type="text/javascript" src="js/srd-import.js?v=npc31"></script>
+    <script type="text/javascript" src="js/srd-items-library.js?v=npc31"></script>
     <script type="text/javascript" src="js/jsonbuilder-import.js"></script>
     <script type="text/javascript" src="js/card-lightbox.js"></script>
-    <script type="text/javascript" defer src="js/ui.js?v=npc30"></script>
-    <script type="text/javascript" defer src="js/autocomplete.js?v=npc30"></script>
-    <script type="text/javascript" defer src="js/redesign-modules.js?v=npc30"></script>
+    <script type="text/javascript" defer src="js/ui.js?v=npc31"></script>
+    <script type="text/javascript" defer src="js/autocomplete.js?v=npc31"></script>
+    <script type="text/javascript" defer src="js/redesign-modules.js?v=npc31"></script>
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap' rel='stylesheet'>
     <link href="fonts/game-icons.css" rel="stylesheet" />
@@ -82,9 +82,9 @@
       }
     </script>
     <!-- CSS -->
-    <link href="css/ui.css?v=npc30" rel="stylesheet" />
-    <link href="css/redesign.css?v=npc30" rel="stylesheet" />
-    <link href="css/cards.css?v=npc30" rel="stylesheet" />
+    <link href="css/ui.css?v=npc31" rel="stylesheet" />
+    <link href="css/redesign.css?v=npc31" rel="stylesheet" />
+    <link href="css/cards.css?v=npc31" rel="stylesheet" />
     <link href="css/card-size.css" rel="stylesheet" />
     <link href="css/icons.css" rel="stylesheet" />
     <link href="css/custom-icons.css" rel="stylesheet" />
@@ -674,14 +674,6 @@
                             <p class="help-block" style="margin:4px 0 0;font-size:12px;">Shown on the card as "Requires Attunement by ..."</p>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="item-description" class="col-sm-3 control-label">Description</label>
-                        <div class="col-sm-9"><textarea id="item-description" class="form-control" rows="5" placeholder="What the item does, how it looks, and how it's used"></textarea></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="item-flavour-text" class="col-sm-3 control-label">Flavour Text</label>
-                        <div class="col-sm-9"><textarea id="item-flavour-text" class="form-control" rows="3" placeholder="Optional italicized flavour text for the card"></textarea></div>
-                    </div>
                             </div>
                         </div>
                     </div>
@@ -690,14 +682,23 @@
                         <div class="panel-heading" role="tab" id="heading_sectionItemFeatures">
                             <h4 class="panel-title">
                                 <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemFeatures" aria-expanded="false">
-                                    Benefits
+                                    Item Description
                                     <span class="section-counter" data-section="sectionItemFeatures"></span>
                                 </a>
                             </h4>
                         </div>
                         <div id="collapse_sectionItemFeatures" class="panel-collapse collapse" role="tabpanel">
                             <div class="panel-body">
-                    <p class="section-description" style="margin-top:0;">Add as many named item benefits as you need. Each one appears on the card like a creature action entry.</p>
+                    <div class="form-group">
+                        <label for="item-description" class="col-sm-3 control-label">Description</label>
+                        <div class="col-sm-9"><textarea id="item-description" class="form-control" rows="5" placeholder="What the item does, how it looks, and how it's used"></textarea></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-flavour-text" class="col-sm-3 control-label">Flavour Text</label>
+                        <div class="col-sm-9"><textarea id="item-flavour-text" class="form-control" rows="3" placeholder="Optional italicized flavour text for the card"></textarea></div>
+                    </div>
+                    <h5>Benefits</h5>
+                    <p class="section-description">Add as many named item benefits as you need. Drag them to rearrange their order; each one appears on the card like a creature action entry.</p>
                     <div id="item-features-repeater"></div>
                     <div class="item-repeater-toolbar">
                         <button type="button" class="item-repeater-btn" id="item-features-add-btn"><i class="fa-solid fa-plus"></i> Add Benefit</button>
@@ -789,43 +790,90 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default section-accordion item-section" id="sectionItemMagic" style="display:none;">
-                        <div class="panel-heading" role="tab" id="heading_sectionItemMagic">
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemCurse" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemCurse">
                             <h4 class="panel-title">
-                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemMagic" aria-expanded="false">
-                                    Curse &amp; Sentience
-                                    <span class="section-counter" data-section="sectionItemMagic"></span>
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemCurse" aria-expanded="false">
+                                    Curse
+                                    <span class="section-counter" data-section="sectionItemCurse"></span>
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse_sectionItemMagic" class="panel-collapse collapse" role="tabpanel">
+                        <div id="collapse_sectionItemCurse" class="panel-collapse collapse" role="tabpanel">
                             <div class="panel-body">
+                    <p class="section-description" style="margin-top:0;">Describe the item's curse. Turning this optional block on also marks the item as cursed on the card preview.</p>
                     <div class="form-group">
-                        <div class="col-sm-9 col-sm-offset-3">
-                            <div class="checkbox" style="margin-top:0;">
-                                <label>
-                                    <input type="checkbox" id="item-cursed"> Cursed
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group" id="item-curse-text-group" style="display:none;">
-                        <label for="item-curse-text" class="col-sm-3 control-label">Curse</label>
+                        <label for="item-curse-text" class="col-sm-3 control-label">Curse Details</label>
                         <div class="col-sm-9"><textarea id="item-curse-text" class="form-control" rows="3" placeholder="Describe the curse and how it manifests"></textarea></div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-9 col-sm-offset-3">
-                            <div class="checkbox" style="margin-top:0;">
-                                <label>
-                                    <input type="checkbox" id="item-sentient"> Sentient
-                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group" id="item-sentient-text-group" style="display:none;">
-                        <label for="item-sentient-text" class="col-sm-3 control-label">Sentience</label>
-                        <div class="col-sm-9"><textarea id="item-sentient-text" class="form-control" rows="3" placeholder="Personality, communication, senses, and purpose"></textarea></div>
+
+                    <div class="panel panel-default section-accordion item-section" id="sectionItemSentience" style="display:none;">
+                        <div class="panel-heading" role="tab" id="heading_sectionItemSentience">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#monster-form-accordion" href="#collapse_sectionItemSentience" aria-expanded="false">
+                                    Sentience
+                                    <span class="section-counter" data-section="sectionItemSentience"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_sectionItemSentience" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                    <p class="section-description" style="margin-top:0;">Define the item's mind, senses, languages, and roleplaying traits. Turning this optional block on also marks the item as sentient.</p>
+                    <div class="form-group">
+                        <label for="item-sentient-alignment" class="col-sm-3 control-label">Alignment</label>
+                        <div class="col-sm-9">
+                            <select id="item-sentient-alignment" class="form-control">
+                                <option value="">—</option>
+                                <option>Lawful Good</option>
+                                <option>Neutral Good</option>
+                                <option>Chaotic Good</option>
+                                <option>Lawful Neutral</option>
+                                <option>True Neutral</option>
+                                <option>Chaotic Neutral</option>
+                                <option>Lawful Evil</option>
+                                <option>Neutral Evil</option>
+                                <option>Chaotic Evil</option>
+                                <option>Unaligned</option>
+                                <option>Any Alignment</option>
+                            </select>
+                        </div>
                     </div>
+                    <h5>Ability Scores</h5>
+                    <div class="row">
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-int" class="control-label">Intelligence</label><input type="number" id="item-sentient-int" class="form-control" min="0" max="30" placeholder="10"></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-wis" class="control-label">Wisdom</label><input type="number" id="item-sentient-wis" class="form-control" min="0" max="30" placeholder="10"></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-cha" class="control-label">Charisma</label><input type="number" id="item-sentient-cha" class="form-control" min="0" max="30" placeholder="10"></div></div>
+                    </div>
+                    <h5>Senses</h5>
+                    <div class="row">
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-blindsight" class="control-label">Blindsight</label><div class="input-group"><input type="number" id="item-sentient-blindsight" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-darkvision" class="control-label">Darkvision</label><div class="input-group"><input type="number" id="item-sentient-darkvision" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-tremorsense" class="control-label">Tremorsense</label><div class="input-group"><input type="number" id="item-sentient-tremorsense" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-truesight" class="control-label">Truesight</label><div class="input-group"><input type="number" id="item-sentient-truesight" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div></div>
+                        <div class="col-sm-4"><div class="form-group"><label for="item-sentient-hearing" class="control-label">Hearing</label><div class="input-group"><input type="number" id="item-sentient-hearing" class="form-control" min="0" step="5" placeholder="0"><span class="input-group-addon">ft.</span></div></div></div>
+                    </div>
+                    <h5>Languages</h5>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" style="text-align:left;">Standard Languages</label>
+                        <div id="item-sentient-languages-standard-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" style="text-align:left;">Exotic Languages</label>
+                        <div id="item-sentient-languages-exotic-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-sentient-text" class="col-sm-3 control-label">Additional Notes</label>
+                        <div class="col-sm-9"><textarea id="item-sentient-text" class="form-control" rows="3" placeholder="Optional additional sentience details"></textarea></div>
+                    </div>
+                    <h5>Roleplay</h5>
+                    <p class="section-description">These fields automatically appear in a Roleplay block on the card when Sentience is enabled.</p>
+                    <div class="form-group"><label for="item-sentient-personality" class="col-sm-3 control-label">Personality</label><div class="col-sm-9"><textarea id="item-sentient-personality" class="form-control" rows="2" placeholder="Personality"></textarea></div></div>
+                    <div class="form-group"><label for="item-sentient-quirk" class="col-sm-3 control-label">Quirk</label><div class="col-sm-9"><textarea id="item-sentient-quirk" class="form-control" rows="2" placeholder="Quirk"></textarea></div></div>
+                    <div class="form-group"><label for="item-sentient-flaw" class="col-sm-3 control-label">Flaw</label><div class="col-sm-9"><textarea id="item-sentient-flaw" class="form-control" rows="2" placeholder="Flaw"></textarea></div></div>
+                    <div class="form-group"><label for="item-sentient-goal" class="col-sm-3 control-label">Goal</label><div class="col-sm-9"><textarea id="item-sentient-goal" class="form-control" rows="2" placeholder="Goal"></textarea></div></div>
                             </div>
                         </div>
                     </div>

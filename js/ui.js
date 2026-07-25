@@ -1641,9 +1641,10 @@ var CARD_SECTION_DEFS = {
     ],
     item: [
         { key: 'details', label: 'Item Details', panel: 'sectionItemDetails', required: true },
-        { key: 'features', label: 'Benefits', panel: 'sectionItemFeatures' },
+        { key: 'features', label: 'Item Description', panel: 'sectionItemFeatures' },
         { key: 'combat', label: 'Combat & Properties', panel: 'sectionItemCombat' },
-        { key: 'curse_sentience', label: 'Curse & Sentience', panel: 'sectionItemMagic' }
+        { key: 'curse', label: 'Curse', panel: 'sectionItemCurse' },
+        { key: 'sentience', label: 'Sentience', panel: 'sectionItemSentience' }
     ]
 };
 
@@ -1806,12 +1807,15 @@ function ui_apply_template_visibility() {
     $('#sectionItemDetails').toggle(isItem);
     $('#sectionItemFeatures').toggle(isItem && on('features'));
     $('#sectionItemCombat').toggle(isItem && on('combat'));
-    $('#sectionItemMagic').toggle(isItem && on('curse_sentience'));
+    $('#sectionItemCurse').toggle(isItem && on('curse'));
+    $('#sectionItemSentience').toggle(isItem && on('sentience'));
+    if (isItem && card) {
+        card.item_cursed = on('curse');
+        card.item_sentient = on('sentience');
+    }
 
     // Item conditional groups (also synced here so card switches restore them)
     $('#item-attunement-req-group').toggle(isItem && !!card && card.item_attunement === 'required_by');
-    $('#item-curse-text-group').toggle(isItem && !!card && (card.item_cursed === true || card.item_cursed === 'true'));
-    $('#item-sentient-text-group').toggle(isItem && !!card && (card.item_sentient === true || card.item_sentient === 'true'));
 
     // Name label follows the card type
     $('#card-title-label-text').text(isItem ? 'Item Name' : (isCreature ? 'Creature Name' : 'NPC Name'));
@@ -1907,7 +1911,6 @@ function ui_update_selected_card() {
                 ui_render_monster_entry_repeater(g, card);
             }
         });
-        ui_render_item_features_repeater(card);
         ui_render_npc_weapons_detailed_repeater(card);
         ui_render_npc_loot_detailed_repeater(card);
         // AC conditional groups
@@ -1951,7 +1954,6 @@ function ui_update_selected_card() {
                 ui_render_monster_entry_repeater(g, null);
             }
         });
-        ui_render_item_features_repeater(null);
         ui_render_npc_weapons_detailed_repeater(null);
         ui_render_npc_loot_detailed_repeater(null);
         $('#monster-equipped-armor-group, #monster-natural-armor-group, #monster-unarmored-defense-group').hide();
@@ -2058,6 +2060,8 @@ function ui_sync_monster_checkboxes_from_card(card) {
     syncGroup('monster-saving-throws-cb', 'saving_throw_proficiencies');
     syncGroup('monster-languages-standard-cb', 'languages');
     syncGroup('monster-languages-exotic-cb', 'languages');
+    syncGroup('item-sentient-languages-standard-cb', 'item_sentient_languages');
+    syncGroup('item-sentient-languages-exotic-cb', 'item_sentient_languages');
     syncGroup('item-properties-cb', 'item_properties');
     syncGroup('item-focus-cb', 'item_focus_classes');
 }
@@ -2072,7 +2076,8 @@ var MONSTER_ENTRY_GROUPS = [
     { prefix: 'monster-action', key: 'actions', mode: 'repeater', label: 'Action', containerId: 'monster-actions-repeater', addButtonId: 'monster-actions-add-btn', emptyText: 'No actions added yet.', hasAttackMeta: true, cardLayout: true, addButtons: [{ id: 'monster-actions-add-attack-btn', kind: 'attack' }, { id: 'monster-actions-add-btn', kind: 'feature' }] },
     { prefix: 'monster-bonusaction', key: 'bonus_actions', mode: 'repeater', label: 'Bonus Action', containerId: 'monster-bonusactions-repeater', addButtonId: 'monster-bonusactions-add-btn', emptyText: 'No bonus actions added yet.', hasAttackMeta: true, cardLayout: true, addButtons: [{ id: 'monster-bonusactions-add-attack-btn', kind: 'attack' }, { id: 'monster-bonusactions-add-btn', kind: 'feature' }] },
     { prefix: 'monster-reaction', key: 'reactions', mode: 'repeater', label: 'Reaction', containerId: 'monster-reactions-repeater', addButtonId: 'monster-reactions-add-btn', emptyText: 'No reactions added yet.', hasTriggerField: true, cardLayout: true, cardTagLabel: 'Reaction' },
-    { prefix: 'monster-legendary', key: 'legendary_actions', mode: 'repeater', label: 'Legendary Action', containerId: 'monster-legendary-repeater', addButtonId: 'monster-legendary-add-btn', emptyText: 'No legendary actions added yet.', cardLayout: true, cardTagLabel: 'Legendary', hasCostField: true }
+    { prefix: 'monster-legendary', key: 'legendary_actions', mode: 'repeater', label: 'Legendary Action', containerId: 'monster-legendary-repeater', addButtonId: 'monster-legendary-add-btn', emptyText: 'No legendary actions added yet.', cardLayout: true, cardTagLabel: 'Legendary', hasCostField: true },
+    { prefix: 'item-feature', key: 'item_features', mode: 'repeater', label: 'Benefit', containerId: 'item-features-repeater', addButtonId: 'item-features-add-btn', emptyText: 'No benefits added yet.', cardLayout: true, cardTagLabel: 'Benefit' }
 ];
 
 var ui_monster_entry_active_indices = {};
@@ -2414,61 +2419,6 @@ function ui_render_monster_entry_repeater(group, card) {
     }).join('');
 }
 
-function ui_item_features_row_html(entry, index) {
-    entry = entry || {};
-    var label = 'Benefit ' + (index + 1);
-    return '' +
-        '<div class="form-group monster-entry-row item-feature-row" data-index="' + index + '">' +
-        '  <label class="col-sm-3 control-label" for="item-feature-' + index + '-title">' + label + '</label>' +
-        '  <div class="col-sm-9">' +
-        '    <div class="item-feature-actions">' +
-        '      <button type="button" class="item-feature-remove-btn" data-remove-index="' + index + '" aria-label="Remove benefit" title="Remove benefit">&times;</button>' +
-        '    </div>' +
-        '    <input type="text" id="item-feature-' + index + '-title" class="form-control item-feature-title" placeholder="Name" style="margin-bottom:2px;" value="' + escape_html(entry.title || '') + '">' +
-        '    <textarea id="item-feature-' + index + '-text" class="form-control item-feature-text" rows="2" placeholder="Description">' + escape_html(entry.text || '') + '</textarea>' +
-        '  </div>' +
-        '</div>';
-}
-
-function ui_item_features_list_from_dom() {
-    var list = [];
-    $('#item-features-repeater .item-feature-row').each(function () {
-        var title = ($(this).find('.item-feature-title').val() || '');
-        var text = ($(this).find('.item-feature-text').val() || '');
-        if (title.trim() || text.trim()) {
-            list.push({ title: title, text: text });
-        }
-    });
-    return list;
-}
-
-function ui_sync_item_features_from_dom(renderDeferred) {
-    var card = ui_selected_card();
-    if (!card) return;
-    card.item_features = ui_item_features_list_from_dom();
-    if (renderDeferred && window.PERF_SAFE_UPDATES?.scheduleGroupRowPreviewRenders && typeof ui_render_selected_card_deferred === 'function') {
-        ui_render_selected_card_deferred();
-    } else {
-        ui_cancel_scheduled_card_render();
-        ui_render_selected_card();
-    }
-    local_store_save();
-    if (typeof updateSectionCounters === 'function') updateSectionCounters();
-}
-
-function ui_render_item_features_repeater(card) {
-    var container = document.getElementById('item-features-repeater');
-    if (!container) return;
-    var list = (card && Array.isArray(card.item_features)) ? card.item_features : [];
-    if (!list.length) {
-        container.innerHTML = '<p class="item-repeater-empty">No benefits added yet.</p>';
-        return;
-    }
-    container.innerHTML = list.map(function (entry, index) {
-        return ui_item_features_row_html(entry, index);
-    }).join('');
-}
-
 function ui_npc_weapon_ability_options(value, includeNone) {
     var selected = String(value || 'auto').toLowerCase();
     var options = [
@@ -2729,12 +2679,15 @@ function ui_monster_checkbox_change(containerId, cardKey) {
     var card = ui_selected_card();
     if (!card) return;
     var arr = [];
-    if (cardKey === 'languages') {
-        // Languages: merge both Standard and Exotic so the card shows all selected languages
-        ['monster-languages-standard-cb', 'monster-languages-exotic-cb'].forEach(function (id) {
+    if (cardKey === 'languages' || cardKey === 'item_sentient_languages') {
+        // Languages: merge both Standard and Exotic so the card shows all selected languages.
+        var languageContainers = cardKey === 'item_sentient_languages'
+            ? ['item-sentient-languages-standard-cb', 'item-sentient-languages-exotic-cb']
+            : ['monster-languages-standard-cb', 'monster-languages-exotic-cb'];
+        languageContainers.forEach(function (id) {
             var container = document.getElementById(id);
             if (!container) return;
-            var checkboxes = container.querySelectorAll('input[type="checkbox"][data-monster-array="languages"]');
+            var checkboxes = container.querySelectorAll('input[type="checkbox"][data-monster-array="' + cardKey + '"]');
             checkboxes.forEach(function (cb) {
                 if (cb.checked) arr.push(cb.value);
             });
@@ -2750,6 +2703,7 @@ function ui_monster_checkbox_change(containerId, cardKey) {
     card[cardKey] = arr;
     ui_render_selected_card();
     ui_update_monster_calculated_displays();
+    local_store_save();
 }
 
 function ui_monster_form_init() {
@@ -2770,6 +2724,8 @@ function ui_monster_form_init() {
         var exotic = LANGUAGES_LIST.slice(8);
         ui_build_checkbox_group('monster-languages-standard-cb', standard, 4, 'languages');
         ui_build_checkbox_group('monster-languages-exotic-cb', exotic, 4, 'languages');
+        ui_build_checkbox_group('item-sentient-languages-standard-cb', standard, 4, 'item_sentient_languages');
+        ui_build_checkbox_group('item-sentient-languages-exotic-cb', exotic, 4, 'item_sentient_languages');
     }
     ui_build_checkbox_group('item-properties-cb', ITEM_PROPERTIES, 3, 'item_properties');
     ui_build_checkbox_group('item-focus-cb', ITEM_FOCUS_CLASSES, 3, 'item_focus_classes');
@@ -2786,6 +2742,8 @@ function ui_monster_form_init() {
     bindCheckboxGroup('monster-saving-throws-cb', 'saving_throw_proficiencies');
     bindCheckboxGroup('monster-languages-standard-cb', 'languages');
     bindCheckboxGroup('monster-languages-exotic-cb', 'languages');
+    bindCheckboxGroup('item-sentient-languages-standard-cb', 'item_sentient_languages');
+    bindCheckboxGroup('item-sentient-languages-exotic-cb', 'item_sentient_languages');
     bindCheckboxGroup('item-properties-cb', 'item_properties');
     bindCheckboxGroup('item-focus-cb', 'item_focus_classes');
 
@@ -2800,6 +2758,10 @@ function ui_monster_form_init() {
             if (!card) return;
             if (!card.sections || typeof card.sections !== 'object') card.sections = card_default_sections(card);
             card.sections[key] = cb.checked;
+            if (ui_card_template(card) === 'item') {
+                if (key === 'curse') card.item_cursed = cb.checked;
+                if (key === 'sentience') card.item_sentient = cb.checked;
+            }
             // Keep the legacy flag coherent for anything still reading it
             card.show_stat_block = monster_show_stats(card);
             ui_apply_template_visibility();
@@ -2921,40 +2883,6 @@ function ui_monster_form_init() {
         var card = ui_selected_card();
         if (card) ui_recompute_art_gradient(card, function () { ui_render_selected_card(); });
     });
-
-    $('#item-features-add-btn').on('click', function () {
-        var card = ui_selected_card();
-        if (!card) return;
-        if (!Array.isArray(card.item_features)) card.item_features = [];
-        card.item_features.push({ title: '', text: '' });
-        ui_render_item_features_repeater(card);
-        local_store_save();
-        if (typeof updateSectionCounters === 'function') updateSectionCounters();
-        var index = card.item_features.length - 1;
-        var titleInput = document.getElementById('item-feature-' + index + '-title');
-        if (titleInput) titleInput.focus();
-    });
-
-    $('#item-features-repeater')
-        .on('input', '.item-feature-title, .item-feature-text', function () {
-            ui_sync_item_features_from_dom(true);
-        })
-        .on('change', '.item-feature-title, .item-feature-text', function () {
-            ui_sync_item_features_from_dom(false);
-        })
-        .on('click', '.item-feature-remove-btn', function () {
-            var card = ui_selected_card();
-            if (!card) return;
-            var index = Number($(this).attr('data-remove-index'));
-            if (!Array.isArray(card.item_features)) card.item_features = [];
-            if (!Number.isFinite(index) || index < 0 || index >= card.item_features.length) return;
-            card.item_features.splice(index, 1);
-            ui_render_item_features_repeater(card);
-            ui_cancel_scheduled_card_render();
-            ui_render_selected_card();
-            local_store_save();
-            if (typeof updateSectionCounters === 'function') updateSectionCounters();
-        });
 
     NPC_INVENTORY_DETAIL_GROUPS.forEach(function (group) {
         $('#' + group.addButtonId).on('click', function () {
@@ -4863,13 +4791,14 @@ $(document).ready(function () {
             count: 5
         },
         sectionItemDetails: {
-            total: 8,
-            fields: ['item-type', 'item-subtype', 'item-rarity', 'item-cost', 'item-weight', 'item-attunement', 'item-description', 'item-flavour-text'],
+            total: 6,
+            fields: ['item-type', 'item-subtype', 'item-rarity', 'item-cost', 'item-weight', 'item-attunement'],
             type: 'text'
         },
         sectionItemFeatures: {
-            total: 0,
-            type: 'dynamic_title_text_pairs',
+            total: 2,
+            fields: ['item-description', 'item-flavour-text'],
+            type: 'item_description',
             containerId: 'item-features-repeater'
         },
         sectionItemCombat: {
@@ -4877,10 +4806,20 @@ $(document).ready(function () {
             fields: ['item-damage-dice', 'item-damage-type', 'item-range-normal', 'item-range-long', 'item-ac'],
             type: 'text'
         },
-        sectionItemMagic: {
-            total: 2,
-            fields: ['item-cursed', 'item-sentient'],
-            type: 'checked'
+        sectionItemCurse: {
+            total: 1,
+            fields: ['item-curse-text'],
+            type: 'text'
+        },
+        sectionItemSentience: {
+            total: 14,
+            fields: [
+                'item-sentient-alignment', 'item-sentient-int', 'item-sentient-wis', 'item-sentient-cha',
+                'item-sentient-blindsight', 'item-sentient-darkvision', 'item-sentient-tremorsense',
+                'item-sentient-truesight', 'item-sentient-hearing', 'item-sentient-text',
+                'item-sentient-personality', 'item-sentient-quirk', 'item-sentient-flaw', 'item-sentient-goal'
+            ],
+            type: 'text'
         }
     };
 
@@ -4981,14 +4920,35 @@ $(document).ready(function () {
             case 'dynamic_title_text_pairs':
                 var container = document.getElementById(config.containerId);
                 if (container) {
-                    var rows = container.querySelectorAll('.item-feature-row');
+                    var rows = container.querySelectorAll('.monster-entry-repeater-row');
                     total = rows.length || 0;
                     rows.forEach(function (row) {
-                        var titleEl = row.querySelector('.item-feature-title');
-                        var textEl = row.querySelector('.item-feature-text');
+                        var titleEl = row.querySelector('.monster-entry-repeater-title');
+                        var textEl = row.querySelector('.monster-entry-repeater-text');
                         if (titleEl && textEl &&
                             titleEl.value && titleEl.value.trim() !== '' &&
                             textEl.value && textEl.value.trim() !== '') {
+                            filled++;
+                        }
+                    });
+                }
+                break;
+
+            case 'item_description':
+                config.fields.forEach(function(id) {
+                    var field = document.getElementById(id);
+                    if (field && field.value && field.value.trim() !== '') filled++;
+                });
+                var benefitContainer = document.getElementById(config.containerId);
+                if (benefitContainer) {
+                    var benefitRows = benefitContainer.querySelectorAll('.monster-entry-repeater-row');
+                    total = config.total + benefitRows.length;
+                    benefitRows.forEach(function (row) {
+                        var titleField = row.querySelector('.monster-entry-repeater-title');
+                        var textField = row.querySelector('.monster-entry-repeater-text');
+                        if (titleField && textField &&
+                            titleField.value && titleField.value.trim() !== '' &&
+                            textField.value && textField.value.trim() !== '') {
                             filled++;
                         }
                     });
@@ -5012,7 +4972,7 @@ $(document).ready(function () {
     var SECTION_ORDER = [
         'sectionCard',
         // Item sections (hidden unless Card Type = Item)
-        'sectionItemDetails', 'sectionItemFeatures', 'sectionItemCombat', 'sectionItemMagic',
+        'sectionItemDetails', 'sectionItemFeatures', 'sectionItemCombat', 'sectionItemCurse', 'sectionItemSentience',
         // Creature Challenge & Identity
         'sectionCreatureIdentity',
         // NPC sections

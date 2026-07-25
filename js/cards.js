@@ -139,6 +139,20 @@ function default_card_data() {
     item_curse_text: '',
     item_sentient: false,
     item_sentient_text: '',
+    item_sentient_alignment: '',
+    item_sentient_int: '',
+    item_sentient_wis: '',
+    item_sentient_cha: '',
+    item_sentient_blindsight: '',
+    item_sentient_darkvision: '',
+    item_sentient_tremorsense: '',
+    item_sentient_truesight: '',
+    item_sentient_hearing: '',
+    item_sentient_languages: [],
+    item_sentient_personality: '',
+    item_sentient_quirk: '',
+    item_sentient_flaw: '',
+    item_sentient_goal: '',
     item_description: '',
     item_features: [],
     item_flavour_text: ''
@@ -248,7 +262,7 @@ function card_init(card) {
     return item.name || item.item_tag || item.notes;
   });
   // Normalize array fields (multiselects)
-  ['damage_resistances', 'damage_immunities', 'damage_vulnerabilities', 'condition_immunities', 'saving_throw_proficiencies', 'languages', 'item_properties', 'item_focus_classes'].forEach(function (key) {
+  ['damage_resistances', 'damage_immunities', 'damage_vulnerabilities', 'condition_immunities', 'saving_throw_proficiencies', 'languages', 'item_properties', 'item_focus_classes', 'item_sentient_languages'].forEach(function (key) {
     if (!Array.isArray(base[key])) {
       base[key] = typeof base[key] === 'string' && base[key] ? base[key].split(',').map(function (s) { return s.trim(); }) : [];
     }
@@ -259,6 +273,10 @@ function card_init(card) {
     base.template = (base.show_stat_block === true || base.show_stat_block === 'true') ? 'creature' : 'npc';
   }
   base.sections = card_default_sections(base);
+  if (base.template === 'item') {
+    base.item_cursed = base.sections.curse === true;
+    base.item_sentient = base.sections.sentience === true;
+  }
   return base;
 }
 
@@ -271,7 +289,7 @@ function card_init(card) {
 var COMBAT_SECTION_KEYS = ['ability_scores', 'defense', 'speeds', 'resistances', 'damage_immunities', 'vulnerabilities', 'condition_immunities', 'saving_throws', 'skills', 'senses', 'languages'];
 var NPC_SECTION_KEYS = ['identity', 'roleplay', 'inventory', 'related', 'actions', 'bonus_actions', 'reactions', 'legendary_actions'].concat(COMBAT_SECTION_KEYS);
 var CREATURE_SECTION_KEYS = ['challenge_identity'].concat(COMBAT_SECTION_KEYS, ['traits', 'actions', 'bonus_actions', 'reactions', 'legendary_actions']);
-var ITEM_SECTION_KEYS = ['details', 'features', 'combat', 'curse_sentience'];
+var ITEM_SECTION_KEYS = ['details', 'features', 'combat', 'curse', 'sentience'];
 var NPC_SUBCLASS_AFFIXES = {
   barbarian: { prefix: 'Path of the ' },
   bard: { prefix: 'College of ' },
@@ -339,7 +357,27 @@ function card_default_sections(card) {
     req('details');
     def('features', true);
     def('combat', anyHas([card.item_damage_dice, card.item_damage_type, card.item_range_normal, card.item_range_long, card.item_ac]) || arrHas(card.item_properties) || arrHas(card.item_focus_classes));
-    def('curse_sentience', card.item_cursed === true || card.item_sentient === true || anyHas([card.item_curse_text, card.item_sentient_text]));
+    var legacyMagicEnabled = existing.curse_sentience === true;
+    def('curse', (legacyMagicEnabled && (card.item_cursed === true || has(card.item_curse_text))) || card.item_cursed === true || has(card.item_curse_text));
+    def('sentience', (legacyMagicEnabled && (card.item_sentient === true || has(card.item_sentient_text))) ||
+      card.item_sentient === true ||
+      anyHas([
+        card.item_sentient_text,
+        card.item_sentient_alignment,
+        card.item_sentient_int,
+        card.item_sentient_wis,
+        card.item_sentient_cha,
+        card.item_sentient_blindsight,
+        card.item_sentient_darkvision,
+        card.item_sentient_tremorsense,
+        card.item_sentient_truesight,
+        card.item_sentient_hearing,
+        card.item_sentient_personality,
+        card.item_sentient_quirk,
+        card.item_sentient_flaw,
+        card.item_sentient_goal
+      ]) ||
+      arrHas(card.item_sentient_languages));
   } else if (t === 'creature') {
     req('challenge_identity');
     req('ability_scores');
@@ -1854,7 +1892,7 @@ function monster_entry_group_html(d, key, headerText, sectionKey) {
     const trigger = (t.trigger || '').trim();
     const text = (t.text || '').trim();
     const isCreatureReaction = key === 'reactions';
-    const usesRichText = key === 'traits' || key === 'actions' || key === 'bonus_actions' || key === 'reactions' || key === 'legendary_actions';
+    const usesRichText = key === 'traits' || key === 'actions' || key === 'bonus_actions' || key === 'reactions' || key === 'legendary_actions' || key === 'item_features';
     const isAction = key === 'actions' || key === 'bonus_actions';
     const isAttack = isAction && monster_action_entry_kind(t) === 'attack';
     const reactionBody = isCreatureReaction
@@ -1993,24 +2031,6 @@ function monster_stats_block_html(d) {
 // Item card rendering
 // ============================================================================
 
-/** Classic rarity color conventions (used for the type line + accents). */
-const ITEM_RARITY_COLORS = {
-  'Common': '#bcc4c9',
-  'Uncommon': '#4cbb3e',
-  'Rare': '#5aa2e6',
-  'Very Rare': '#b35ae6',
-  'Legendary': '#f0a63a',
-  'Artifact': '#e6675a',
-  'Varies': '#d3c092',
-  'Unknown': '#a9a9a9',
-  'Unknown (Magic)': '#a9a9a9',
-  'Other': '#d3c092'
-};
-
-function item_rarity_color(rarity) {
-  return ITEM_RARITY_COLORS[(rarity || '').trim()] || '#d3c092';
-}
-
 function item_display_rarity(rarity) {
   const value = String(rarity || '').trim();
   if (!value) return '';
@@ -2133,6 +2153,70 @@ function item_flavour_text_section_html(text) {
     '</div>';
 }
 
+function item_human_list(values) {
+  const list = (Array.isArray(values) ? values : []).filter(Boolean);
+  if (list.length <= 1) return list[0] || '';
+  if (list.length === 2) return list[0] + ' and ' + list[1];
+  return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
+}
+
+function item_sentience_section_html(d) {
+  const name = (d.title || '').trim() || 'This item';
+  const alignment = (d.item_sentient_alignment || '').trim() || 'unaligned';
+  const intScore = String(d.item_sentient_int == null ? '' : d.item_sentient_int).trim() || '\u2014';
+  const wisScore = String(d.item_sentient_wis == null ? '' : d.item_sentient_wis).trim() || '\u2014';
+  const chaScore = String(d.item_sentient_cha == null ? '' : d.item_sentient_cha).trim() || '\u2014';
+  const senses = [
+    ['blindsight', d.item_sentient_blindsight],
+    ['darkvision', d.item_sentient_darkvision],
+    ['tremorsense', d.item_sentient_tremorsense],
+    ['truesight', d.item_sentient_truesight],
+    ['hearing', d.item_sentient_hearing]
+  ].filter(function (entry) {
+    return String(entry[1] == null ? '' : entry[1]).trim();
+  }).map(function (entry) {
+    return entry[0] + ' out to a range of ' + String(entry[1]).trim() + ' feet';
+  });
+  const languages = Array.isArray(d.item_sentient_languages)
+    ? d.item_sentient_languages.filter(function (language) { return String(language || '').trim(); })
+    : [];
+
+  let firstParagraph = name + ' is a sentient ' + alignment + ' weapon with an Intelligence of ' +
+    intScore + ', a Wisdom of ' + wisScore + ', and a Charisma of ' + chaScore + '.';
+  if (senses.length) firstParagraph += ' It has ' + item_human_list(senses) + '.';
+
+  let secondParagraph = 'The weapon communicates telepathically with its wielder';
+  if (languages.length) {
+    secondParagraph += ' and can speak, read, and understand ' + item_human_list(languages);
+  }
+  secondParagraph += '.';
+
+  const additionalNotes = (d.item_sentient_text || '').trim();
+  const body = '<div class="monster-trait item-sentience-copy">' +
+    '<p>' + escape_html(firstParagraph) + '</p>' +
+    '<p>' + escape_html(secondParagraph) + '</p>' +
+    (additionalNotes ? '<p class="item-sentience-notes">' + escape_html(additionalNotes) + '</p>' : '') +
+    '</div>';
+  return monster_traits_box_html('Sentience', body, 'item-sentience-section');
+}
+
+function item_sentient_roleplay_section_html(d) {
+  const roleplayFields = [
+    ['Personality', d.item_sentient_personality, 'personality'],
+    ['Quirk', d.item_sentient_quirk, 'quirk'],
+    ['Flaw', d.item_sentient_flaw, 'flaw'],
+    ['Goal', d.item_sentient_goal, 'goal']
+  ];
+  const items = roleplayFields.filter(function (field) {
+    return String(field[1] || '').trim();
+  }).map(function (field) {
+    return '<div class="monster-trait monster-rp-' + field[2] + '">' +
+      '<strong class="monster-trait-name">' + escape_html(field[0]) + '</strong>' +
+      '<span class="monster-trait-desc"> ' + escape_html(String(field[1]).trim()) + '</span></div>';
+  }).join('');
+  return items ? monster_traits_box_html('Roleplay', items, 'monster-roleplay-section item-sentient-roleplay-section') : '';
+}
+
 function card_generate_front_item(data, options, { isPreview }) {
   const d = data;
   const artStyle = card_front_artwork_style(d);
@@ -2141,21 +2225,17 @@ function card_generate_front_item(data, options, { isPreview }) {
 
   const rarityLine = item_rarity_attunement_line(d);
   const typeLine = item_type_line(d);
-  const rarityColor = item_rarity_color(d.item_rarity);
-
   // Cursed / Sentient flags surface on the front as small marker tags so the
   // GM can spot them at a glance (curse details stay on the back).
   const flags = [];
-  if (card_section_enabled(d, 'curse_sentience')) {
-    if (d.item_sentient === true || d.item_sentient === 'true') flags.push('<span class="item-flag item-flag-sentient" title="Sentient Item">Sentient</span>');
-    if (d.item_cursed === true || d.item_cursed === 'true') flags.push('<span class="item-flag item-flag-cursed" title="Cursed Item">Cursed</span>');
-  }
+  if (card_section_enabled(d, 'sentience')) flags.push('<span class="item-flag item-flag-sentient" title="Sentient Item">Sentient</span>');
+  if (card_section_enabled(d, 'curse')) flags.push('<span class="item-flag item-flag-cursed" title="Cursed Item">Cursed</span>');
   const flagsHtml = flags.length ? '<div class="item-flags-overlay">' + flags.join('') + '</div>' : '';
   const emblemHtml = item_corner_emblem_html(d);
 
   const headerBlock = '<div class="monster-header-block header-align-center">' +
     '<div class="monster-header-main">' +
-    (rarityLine ? '<p class="monster-subtitle item-rarity-line" style="color:' + rarityColor + ';">' + escape_html(rarityLine) + '</p>' : '') +
+    (rarityLine ? '<p class="monster-subtitle item-rarity-line" style="color:#fff;">' + escape_html(rarityLine) + '</p>' : '') +
     '<h2 class="monster-name">' + escape_html((d.title || '').toUpperCase()) + '</h2>' +
     (typeLine ? '<p class="monster-npc-title item-type-line">' + escape_html(typeLine) + '</p>' : '') +
     '</div>' +
@@ -2234,21 +2314,18 @@ function card_generate_back_item(data, options, { isPreview }) {
   const descriptionHtml = item_description_section_html(d.item_description);
   const combatHtml = card_section_enabled(d, 'combat') ? item_combat_tags_html(d) : '';
 
-  const showMagic = card_section_enabled(d, 'curse_sentience');
-  const cursed = showMagic && (d.item_cursed === true || d.item_cursed === 'true');
+  const cursed = card_section_enabled(d, 'curse');
   const curseText = (d.item_curse_text || '').trim();
   const curseHtml = cursed
     ? monster_traits_box_html('Curse', '<div class="monster-trait"><span class="monster-trait-desc">' + escape_html(curseText || 'This item is cursed.') + '</span></div>', 'item-curse-section')
     : '';
 
-  const sentient = showMagic && (d.item_sentient === true || d.item_sentient === 'true');
-  const sentientText = (d.item_sentient_text || '').trim();
-  const sentientHtml = sentient
-    ? monster_traits_box_html('Sentience', '<div class="monster-trait"><span class="monster-trait-desc">' + escape_html(sentientText || 'This item is sentient.') + '</span></div>', 'item-sentience-section')
-    : '';
+  const sentient = card_section_enabled(d, 'sentience');
+  const sentientHtml = sentient ? item_sentience_section_html(d) : '';
+  const sentientRoleplayHtml = sentient ? item_sentient_roleplay_section_html(d) : '';
 
   const featuresHtml = monster_entry_group_html(d, 'item_features', 'Benefits', 'features');
-  const sections = [detailsHtml, descriptionHtml, featuresHtml, combatHtml, sentientHtml, curseHtml].filter(Boolean);
+  const sections = [detailsHtml, descriptionHtml, featuresHtml, combatHtml, sentientHtml, sentientRoleplayHtml, curseHtml].filter(Boolean);
   const contentHtml = sections.length === 0 ? '' : '<div class="monster-back-content">' + sections.join('') + '</div>';
   const textureHtml = card_texture_overlay_html(true);
 

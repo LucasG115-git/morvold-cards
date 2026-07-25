@@ -52,8 +52,10 @@
         reactions: 'fa-solid fa-reply',
         legendary_actions: 'fa-solid fa-crown',
         details: 'fa-solid fa-scroll',
+        features: 'fa-solid fa-align-left',
         combat: 'fa-solid fa-gavel',
-        curse_sentience: 'fa-solid fa-skull'
+        curse: 'fa-solid fa-skull',
+        sentience: 'fa-solid fa-brain'
     };
 
     // panelId → { key, label, icon }, built from every type's section defs.
@@ -156,6 +158,11 @@
                     nonEmpty(card.item_rarity) && card.item_rarity !== 'None' ? card.item_rarity : '',
                     card.item_cost
                 ]) || 'Not set';
+            case 'features': {
+                var benefits = entries('item_features');
+                if (benefits !== 'None yet') return benefits;
+                return nonEmpty(card.item_description) ? 'Description added' : 'None yet';
+            }
             case 'combat': {
                 var c = [];
                 if (nonEmpty(card.item_damage_dice) || nonEmpty(card.item_damage_type)) c.push([card.item_damage_dice, card.item_damage_type].filter(nonEmpty).join(' '));
@@ -164,12 +171,14 @@
                 if (arr(card.item_properties).length) c.push(card.item_properties.join(', '));
                 return c.length ? c.join(' · ') : 'None';
             }
-            case 'curse_sentience': {
-                var cs = [];
-                if (card.item_cursed === true || card.item_cursed === 'true') cs.push('Cursed');
-                if (card.item_sentient === true || card.item_sentient === 'true') cs.push('Sentient');
-                return cs.length ? cs.join(', ') : 'None';
-            }
+            case 'curse': return nonEmpty(card.item_curse_text) ? 'Curse described' : 'No details yet';
+            case 'sentience':
+                return join([
+                    card.item_sentient_alignment,
+                    nonEmpty(card.item_sentient_int) ? ('INT ' + card.item_sentient_int) : '',
+                    nonEmpty(card.item_sentient_wis) ? ('WIS ' + card.item_sentient_wis) : '',
+                    nonEmpty(card.item_sentient_cha) ? ('CHA ' + card.item_sentient_cha) : ''
+                ]) || 'Not set';
         }
         return '';
     }
