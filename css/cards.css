@@ -1658,13 +1658,9 @@
     overflow-wrap: anywhere;
 }
 
-/* Curse section header gets a red tint to stand out on the back */
-.item-curse-section .monster-traits-header {
-    color: #a03030;
-}
-
+.item-curse-section .monster-traits-header,
 .item-sentience-section .monster-traits-header {
-    color: #34427a;
+    color: #fff;
 }
 
 .item-sentience-copy p {

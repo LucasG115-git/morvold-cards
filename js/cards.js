@@ -2160,6 +2160,31 @@ function item_human_list(values) {
   return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
 }
 
+function item_sentient_senses_text(senses) {
+  const rangeGroups = [];
+  const groupsByRange = Object.create(null);
+
+  (Array.isArray(senses) ? senses : []).forEach(function (sense) {
+    const label = String(sense[0] || '').trim();
+    const range = String(sense[1] == null ? '' : sense[1]).trim();
+    if (!label || !range) return;
+
+    if (!groupsByRange[range]) {
+      groupsByRange[range] = { range: range, labels: [] };
+      rangeGroups.push(groupsByRange[range]);
+    }
+    groupsByRange[range].labels.push(label);
+  });
+
+  const descriptions = rangeGroups.map(function (group) {
+    return item_human_list(group.labels) + ' out to a range of ' + group.range;
+  });
+  if (descriptions.length === 2 && rangeGroups.some(function (group) { return group.labels.length > 1; })) {
+    return descriptions[0] + ', and ' + descriptions[1];
+  }
+  return item_human_list(descriptions);
+}
+
 function item_sentience_section_html(d) {
   const name = (d.title || '').trim() || 'This item';
   const alignment = (d.item_sentient_alignment || '').trim() || 'unaligned';
@@ -2167,23 +2192,20 @@ function item_sentience_section_html(d) {
   const wisScore = String(d.item_sentient_wis == null ? '' : d.item_sentient_wis).trim() || '\u2014';
   const chaScore = String(d.item_sentient_cha == null ? '' : d.item_sentient_cha).trim() || '\u2014';
   const senses = [
-    ['blindsight', d.item_sentient_blindsight],
-    ['darkvision', d.item_sentient_darkvision],
-    ['tremorsense', d.item_sentient_tremorsense],
-    ['truesight', d.item_sentient_truesight],
-    ['hearing', d.item_sentient_hearing]
-  ].filter(function (entry) {
-    return String(entry[1] == null ? '' : entry[1]).trim();
-  }).map(function (entry) {
-    return entry[0] + ' out to a range of ' + String(entry[1]).trim() + ' feet';
-  });
+    ['Blindsight', d.item_sentient_blindsight],
+    ['Darkvision', d.item_sentient_darkvision],
+    ['Tremorsense', d.item_sentient_tremorsense],
+    ['Truesight', d.item_sentient_truesight],
+    ['Hearing', d.item_sentient_hearing]
+  ];
+  const sensesText = item_sentient_senses_text(senses);
   const languages = Array.isArray(d.item_sentient_languages)
     ? d.item_sentient_languages.filter(function (language) { return String(language || '').trim(); })
     : [];
 
-  let firstParagraph = name + ' is a sentient ' + alignment + ' weapon with an Intelligence of ' +
+  let firstParagraph = ' is a sentient ' + alignment + ' weapon with an Intelligence of ' +
     intScore + ', a Wisdom of ' + wisScore + ', and a Charisma of ' + chaScore + '.';
-  if (senses.length) firstParagraph += ' It has ' + item_human_list(senses) + '.';
+  if (sensesText) firstParagraph += ' It has ' + sensesText + '.';
 
   let secondParagraph = 'The weapon communicates telepathically with its wielder';
   if (languages.length) {
@@ -2193,7 +2215,7 @@ function item_sentience_section_html(d) {
 
   const additionalNotes = (d.item_sentient_text || '').trim();
   const body = '<div class="monster-trait item-sentience-copy">' +
-    '<p>' + escape_html(firstParagraph) + '</p>' +
+    '<p><em>' + escape_html(name) + '</em>' + escape_html(firstParagraph) + '</p>' +
     '<p>' + escape_html(secondParagraph) + '</p>' +
     (additionalNotes ? '<p class="item-sentience-notes">' + escape_html(additionalNotes) + '</p>' : '') +
     '</div>';
