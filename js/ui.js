@@ -2329,13 +2329,19 @@ function ui_monster_action_notation_toolbar_html(group) {
     return '' +
         '    <div class="monster-notation-toolbar" aria-label="Insert notation">' +
         '      <span class="monster-notation-toolbar-label">Insert:</span>' +
-        '      <button type="button" class="monster-notation-token monster-notation-token-damage" draggable="true" data-notation="@damage[1d6|bonus=auto|type=slashing]" data-select-text="1d6" title="Click to insert at the cursor, or drag into the text box">' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-damage" data-notation="@damage[1d6|bonus=auto|type=slashing]" data-select-text="1d6" title="Click to insert at the cursor">' +
         '        <i class="fa-solid fa-dice-d20" aria-hidden="true"></i><span>Damage</span>' +
         '      </button>' +
-        '      <button type="button" class="monster-notation-token monster-notation-token-save" draggable="true" data-notation="@save[dex|dc=auto]" data-select-text="dex" title="Click to insert at the cursor, or drag into the text box">' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-save" data-notation="@save[dex|dc=auto|ability=auto]" data-select-text="dex" title="Click to insert at the cursor">' +
         '        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Saving Throw</span>' +
         '      </button>' +
-        '      <span class="monster-notation-toolbar-hint">Click or drag into the text</span>' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-failure" data-notation="@failure[effect]" data-select-text="effect" title="Click to insert at the cursor">' +
+        '        <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><span>Save Failure</span>' +
+        '      </button>' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-success" data-notation="@success[effect]" data-select-text="effect" title="Click to insert at the cursor">' +
+        '        <i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Save Success</span>' +
+        '      </button>' +
+        '      <span class="monster-notation-toolbar-hint">Click to insert at the cursor</span>' +
         '    </div>';
 }
 
@@ -3323,57 +3329,6 @@ function ui_monster_form_init() {
                 if (!ui_insert_textarea_notation(textarea, notation, selectText)) return;
                 textarea.focus();
                 $(textarea).trigger('input');
-            })
-            .on('dragstart', '.monster-notation-token', function (event) {
-                if (!g.supportsNotation) return;
-                event.stopImmediatePropagation();
-                var originalEvent = event.originalEvent;
-                var notation = String($(this).attr('data-notation') || '');
-                if (!originalEvent || !originalEvent.dataTransfer || !notation) return;
-                originalEvent.dataTransfer.effectAllowed = 'copy';
-                originalEvent.dataTransfer.setData('application/x-morvold-notation', notation);
-                originalEvent.dataTransfer.setData('text/plain', notation);
-                $(this).addClass('is-dragging');
-            })
-            .on('dragend', '.monster-notation-token', function (event) {
-                event.stopImmediatePropagation();
-                $(this).removeClass('is-dragging');
-            })
-            .on('dragover', '.monster-entry-repeater-text', function (event) {
-                if (!g.supportsNotation) return;
-                var originalEvent = event.originalEvent;
-                var dataTransfer = originalEvent && originalEvent.dataTransfer;
-                var types = dataTransfer && dataTransfer.types ? Array.from(dataTransfer.types) : [];
-                if (types.indexOf('application/x-morvold-notation') === -1) return;
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                dataTransfer.dropEffect = 'copy';
-                $(this).addClass('is-notation-drop-target');
-            })
-            .on('dragleave', '.monster-entry-repeater-text', function () {
-                $(this).removeClass('is-notation-drop-target');
-            })
-            .on('drop', '.monster-entry-repeater-text', function (event) {
-                if (!g.supportsNotation) return;
-                var originalEvent = event.originalEvent;
-                var dataTransfer = originalEvent && originalEvent.dataTransfer;
-                var notation = dataTransfer ? dataTransfer.getData('application/x-morvold-notation') : '';
-                if (!notation) return;
-                // Do not prevent the default: Chromium inserts text/plain at its visible
-                // textarea drop caret. The fallback covers browsers that do not.
-                event.stopImmediatePropagation();
-                var textarea = this;
-                var beforeValue = textarea.value;
-                var dropStart = textarea.selectionStart;
-                var dropEnd = textarea.selectionEnd;
-                $(textarea).removeClass('is-notation-drop-target');
-                setTimeout(function () {
-                    if (textarea.value === beforeValue) {
-                        ui_insert_textarea_notation(textarea, notation, '', dropStart, dropEnd);
-                    }
-                    textarea.focus();
-                    $(textarea).trigger('input');
-                }, 0);
             })
             .on('click', '.monster-action-card-summary', function (event) {
                 if ($(event.target).closest('button').length) return;

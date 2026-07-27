@@ -68,7 +68,7 @@
     <script type="text/javascript" src="js/srd-items-library.js?v=npc36"></script>
     <script type="text/javascript" src="js/jsonbuilder-import.js"></script>
     <script type="text/javascript" src="js/card-lightbox.js"></script>
-    <script type="text/javascript" defer src="js/ui.js?v=npc36"></script>
+    <script type="text/javascript" defer src="js/ui.js?v=npc37"></script>
     <script type="text/javascript" defer src="js/autocomplete.js?v=npc31"></script>
     <script type="text/javascript" defer src="js/redesign-modules.js?v=npc36"></script>
     <!-- Fonts -->
@@ -82,7 +82,7 @@
       }
     </script>
     <!-- CSS -->
-    <link href="css/ui.css?v=npc33" rel="stylesheet" />
+    <link href="css/ui.css?v=npc37" rel="stylesheet" />
     <link href="css/redesign.css?v=npc31" rel="stylesheet" />
     <link href="css/cards.css?v=npc32" rel="stylesheet" />
     <link href="css/card-size.css" rel="stylesheet" />
@@ -1647,7 +1647,7 @@
                         <div id="collapse_sectionCreatureTraits" class="panel-collapse collapse" role="tabpanel">
                             <div class="panel-body">
                     <div class="field-hint-note" style="margin-bottom:8px;">
-                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Trait/action text supports notation like <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[dex|dc=auto]</code>, <code>@save[dex/str|dc=auto]</code>, <code>@failure[effect]</code>, and <code>@success[effect]</code>. Damage bonuses can be <code>auto</code>, <code>str</code>, <code>dex</code>, <code>con</code>, <code>int</code>, <code>wis</code>, <code>cha</code>, or <code>none</code>.
+                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Trait/action text supports notation like <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[dex|dc=auto|ability=auto]</code>, <code>@save[dex/str|dc=auto|ability=auto]</code>, <code>@failure[effect]</code>, and <code>@success[effect]</code>. Damage bonuses can be <code>auto</code>, <code>str</code>, <code>dex</code>, <code>con</code>, <code>int</code>, <code>wis</code>, <code>cha</code>, or <code>none</code>.
                     </div>
                     <div id="monster-traits-repeater"></div>
                     <div class="item-repeater-toolbar">
@@ -1669,7 +1669,7 @@
                         <div id="collapse_sectionCreatureActions" class="panel-collapse collapse" role="tabpanel">
                             <div class="panel-body">
                     <div class="field-hint-note" style="margin-bottom:8px;">
-                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Inside an Attack's <b>Hit</b> text or an Action's <b>Effect</b> text, you can insert <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[con|dc=14]</code>, <code>@save[dex/str|dc=auto]</code>, <code>@failure[whatever happens on a failure]</code>, and <code>@success[whatever happens on a success]</code>. Optional <code>|ability=cha</code> lets you override which ability is used for an auto DC.
+                        <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Inside an Attack's <b>Hit</b> text or an Action's <b>Effect</b> text, you can insert <code>@damage[1d6|bonus=auto|type=slashing]</code>, <code>@damage[1d10|bonus=str|type=bludgeoning/slashing]</code>, <code>@save[con|dc=14|ability=auto]</code>, <code>@save[dex/str|dc=auto|ability=auto]</code>, <code>@failure[whatever happens on a failure]</code>, and <code>@success[whatever happens on a success]</code>. The <code>|ability=auto</code> segment chooses the DC ability automatically; replace <code>auto</code> with <code>str</code>, <code>dex</code>, <code>con</code>, <code>int</code>, <code>wis</code>, or <code>cha</code> to override it.
                     </div>
                     <div id="monster-actions-note-cr" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>
                     <div id="monster-actions-note-str" class="field-hint-note" style="display:none; margin-bottom:8px;"></div>

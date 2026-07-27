@@ -1210,8 +1210,8 @@ input[type="number"].form-control {
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  cursor: grab;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .monster-notation-token:hover,
@@ -1222,14 +1222,6 @@ input[type="number"].form-control {
   outline: none;
 }
 
-.monster-notation-token:active {
-  cursor: grabbing;
-}
-
-.monster-notation-token.is-dragging {
-  opacity: 0.55;
-}
-
 .monster-notation-token-damage i {
   color: #f2b766;
 }
@@ -1238,9 +1230,12 @@ input[type="number"].form-control {
   color: #7fb1ff;
 }
 
-.monster-entry-repeater-text.is-notation-drop-target {
-  border-color: #7fb1ff;
-  box-shadow: 0 0 0 2px rgba(127, 177, 255, 0.22);
+.monster-notation-token-failure i {
+  color: #e78787;
+}
+
+.monster-notation-token-success i {
+  color: #72c99a;
 }
 
 .npc-inventory-card .monster-action-card-summary {
