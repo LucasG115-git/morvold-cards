@@ -1174,6 +1174,75 @@ input[type="number"].form-control {
   display: none;
 }
 
+.monster-notation-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 3px 0 6px;
+}
+
+.monster-notation-toolbar-label,
+.monster-notation-toolbar-hint {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--light-muted);
+}
+
+.monster-notation-toolbar-label {
+  font-weight: 700;
+}
+
+.monster-notation-toolbar-hint {
+  font-style: italic;
+}
+
+.monster-notation-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--light-soft);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: grab;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.monster-notation-token:hover,
+.monster-notation-token:focus {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--light-white);
+  outline: none;
+}
+
+.monster-notation-token:active {
+  cursor: grabbing;
+}
+
+.monster-notation-token.is-dragging {
+  opacity: 0.55;
+}
+
+.monster-notation-token-damage i {
+  color: #f2b766;
+}
+
+.monster-notation-token-save i {
+  color: #7fb1ff;
+}
+
+.monster-entry-repeater-text.is-notation-drop-target {
+  border-color: #7fb1ff;
+  box-shadow: 0 0 0 2px rgba(127, 177, 255, 0.22);
+}
+
 .npc-inventory-card .monster-action-card-summary {
   cursor: pointer;
 }

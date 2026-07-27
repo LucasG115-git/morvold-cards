@@ -2120,6 +2120,48 @@ function ui_monster_entry_card_tag_label(group, entryKind) {
     return 'Feature';
 }
 
+function ui_monster_action_notation_toolbar_html(group) {
+    if (!group || group.key !== 'actions') return '';
+    return '' +
+        '    <div class="monster-notation-toolbar" aria-label="Insert notation">' +
+        '      <span class="monster-notation-toolbar-label">Insert:</span>' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-damage" draggable="true" data-notation="@damage[1d6|bonus=auto|type=slashing]" data-select-text="1d6" title="Click to insert at the cursor, or drag into the text box">' +
+        '        <i class="fa-solid fa-dice-d20" aria-hidden="true"></i><span>Damage</span>' +
+        '      </button>' +
+        '      <button type="button" class="monster-notation-token monster-notation-token-save" draggable="true" data-notation="@save[dex|dc=auto]" data-select-text="dex" title="Click to insert at the cursor, or drag into the text box">' +
+        '        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Saving Throw</span>' +
+        '      </button>' +
+        '      <span class="monster-notation-toolbar-hint">Click or drag into the text</span>' +
+        '    </div>';
+}
+
+function ui_insert_textarea_notation(textarea, notation, selectText, start, end) {
+    if (!textarea || !notation) return false;
+    var value = String(textarea.value || '');
+    var selectionStart = Number.isFinite(start) ? start : textarea.selectionStart;
+    var selectionEnd = Number.isFinite(end) ? end : textarea.selectionEnd;
+    if (!Number.isFinite(selectionStart)) selectionStart = value.length;
+    if (!Number.isFinite(selectionEnd)) selectionEnd = selectionStart;
+    selectionStart = Math.max(0, Math.min(selectionStart, value.length));
+    selectionEnd = Math.max(selectionStart, Math.min(selectionEnd, value.length));
+
+    if (typeof textarea.setRangeText === 'function') {
+        textarea.setRangeText(notation, selectionStart, selectionEnd, 'end');
+    } else {
+        textarea.value = value.slice(0, selectionStart) + notation + value.slice(selectionEnd);
+    }
+
+    var insertedStart = selectionStart;
+    var editableOffset = selectText ? notation.indexOf(selectText) : -1;
+    if (editableOffset >= 0) {
+        textarea.setSelectionRange(insertedStart + editableOffset, insertedStart + editableOffset + selectText.length);
+    } else {
+        var caret = insertedStart + notation.length;
+        textarea.setSelectionRange(caret, caret);
+    }
+    return true;
+}
+
 function ui_monster_entry_repeater_row_html(group, entry, index) {
     entry = entry || {};
     var entryKind = ui_monster_entry_kind(entry, group);
@@ -2240,6 +2282,7 @@ function ui_monster_entry_repeater_row_html(group, entry, index) {
           '\n'
         : '';
     var responseLabel = group.hasTriggerField ? 'Response' : (group.hasAttackMeta ? (isAttack ? 'Hit' : 'Effect') : 'Description');
+    var notationToolbar = ui_monster_action_notation_toolbar_html(group);
     return '' +
         '<div class="form-group monster-entry-row monster-entry-repeater-row" data-index="' + index + '" data-entry-kind="' + entryKind + '">' +
         '  <label class="col-sm-3 control-label" for="' + group.prefix + '-' + index + '-title">' + label + '</label>' +
@@ -2254,6 +2297,7 @@ function ui_monster_entry_repeater_row_html(group, entry, index) {
         triggerField +
         costField +
         '    <label class="monster-entry-repeater-field-label" for="' + group.prefix + '-' + index + '-text">' + responseLabel + '</label>' +
+        notationToolbar +
         '    <textarea id="' + group.prefix + '-' + index + '-text" class="form-control monster-entry-repeater-text" rows="2" placeholder="' + responseLabel + '">' + escape_html(entry.text || '') + '</textarea>' +
         '  </div>' +
         '</div>';
@@ -3054,6 +3098,68 @@ function ui_monster_form_init() {
             });
         });
         $('#' + g.containerId)
+            .on('click', '.monster-notation-token', function (event) {
+                if (g.key !== 'actions') return;
+                event.preventDefault();
+                event.stopPropagation();
+                var textarea = $(this).closest('.monster-entry-row').find('.monster-entry-repeater-text').get(0);
+                var notation = String($(this).attr('data-notation') || '');
+                var selectText = String($(this).attr('data-select-text') || '');
+                if (!ui_insert_textarea_notation(textarea, notation, selectText)) return;
+                textarea.focus();
+                $(textarea).trigger('input');
+            })
+            .on('dragstart', '.monster-notation-token', function (event) {
+                if (g.key !== 'actions') return;
+                event.stopImmediatePropagation();
+                var originalEvent = event.originalEvent;
+                var notation = String($(this).attr('data-notation') || '');
+                if (!originalEvent || !originalEvent.dataTransfer || !notation) return;
+                originalEvent.dataTransfer.effectAllowed = 'copy';
+                originalEvent.dataTransfer.setData('application/x-morvold-notation', notation);
+                originalEvent.dataTransfer.setData('text/plain', notation);
+                $(this).addClass('is-dragging');
+            })
+            .on('dragend', '.monster-notation-token', function (event) {
+                event.stopImmediatePropagation();
+                $(this).removeClass('is-dragging');
+            })
+            .on('dragover', '.monster-entry-repeater-text', function (event) {
+                if (g.key !== 'actions') return;
+                var originalEvent = event.originalEvent;
+                var dataTransfer = originalEvent && originalEvent.dataTransfer;
+                var types = dataTransfer && dataTransfer.types ? Array.from(dataTransfer.types) : [];
+                if (types.indexOf('application/x-morvold-notation') === -1) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                dataTransfer.dropEffect = 'copy';
+                $(this).addClass('is-notation-drop-target');
+            })
+            .on('dragleave', '.monster-entry-repeater-text', function () {
+                $(this).removeClass('is-notation-drop-target');
+            })
+            .on('drop', '.monster-entry-repeater-text', function (event) {
+                if (g.key !== 'actions') return;
+                var originalEvent = event.originalEvent;
+                var dataTransfer = originalEvent && originalEvent.dataTransfer;
+                var notation = dataTransfer ? dataTransfer.getData('application/x-morvold-notation') : '';
+                if (!notation) return;
+                // Do not prevent the default: Chromium inserts text/plain at its visible
+                // textarea drop caret. The fallback covers browsers that do not.
+                event.stopImmediatePropagation();
+                var textarea = this;
+                var beforeValue = textarea.value;
+                var dropStart = textarea.selectionStart;
+                var dropEnd = textarea.selectionEnd;
+                $(textarea).removeClass('is-notation-drop-target');
+                setTimeout(function () {
+                    if (textarea.value === beforeValue) {
+                        ui_insert_textarea_notation(textarea, notation, '', dropStart, dropEnd);
+                    }
+                    textarea.focus();
+                    $(textarea).trigger('input');
+                }, 0);
+            })
             .on('click', '.monster-action-card-summary', function (event) {
                 if ($(event.target).closest('button').length) return;
                 if (!g.cardLayout) return;
