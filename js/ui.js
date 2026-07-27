@@ -2072,12 +2072,12 @@ var ITEM_FOCUS_CLASSES = ['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ra
 
 // Creature trait/action entry groups: form id prefix ↔ card array key
 var MONSTER_ENTRY_GROUPS = [
-    { prefix: 'monster-trait', key: 'traits', mode: 'repeater', label: 'Trait', containerId: 'monster-traits-repeater', addButtonId: 'monster-traits-add-btn', emptyText: 'No traits added yet.', cardLayout: true, cardTagLabel: 'Trait' },
-    { prefix: 'monster-action', key: 'actions', mode: 'repeater', label: 'Action', containerId: 'monster-actions-repeater', addButtonId: 'monster-actions-add-btn', emptyText: 'No actions added yet.', hasAttackMeta: true, cardLayout: true, addButtons: [{ id: 'monster-actions-add-attack-btn', kind: 'attack' }, { id: 'monster-actions-add-btn', kind: 'feature' }] },
-    { prefix: 'monster-bonusaction', key: 'bonus_actions', mode: 'repeater', label: 'Bonus Action', containerId: 'monster-bonusactions-repeater', addButtonId: 'monster-bonusactions-add-btn', emptyText: 'No bonus actions added yet.', hasAttackMeta: true, cardLayout: true, addButtons: [{ id: 'monster-bonusactions-add-attack-btn', kind: 'attack' }, { id: 'monster-bonusactions-add-btn', kind: 'feature' }] },
-    { prefix: 'monster-reaction', key: 'reactions', mode: 'repeater', label: 'Reaction', containerId: 'monster-reactions-repeater', addButtonId: 'monster-reactions-add-btn', emptyText: 'No reactions added yet.', hasTriggerField: true, cardLayout: true, cardTagLabel: 'Reaction' },
-    { prefix: 'monster-legendary', key: 'legendary_actions', mode: 'repeater', label: 'Legendary Action', containerId: 'monster-legendary-repeater', addButtonId: 'monster-legendary-add-btn', emptyText: 'No legendary actions added yet.', cardLayout: true, cardTagLabel: 'Legendary', hasCostField: true },
-    { prefix: 'item-feature', key: 'item_features', mode: 'repeater', label: 'Benefit', containerId: 'item-features-repeater', addButtonId: 'item-features-add-btn', emptyText: 'No benefits added yet.', cardLayout: true, cardTagLabel: 'Benefit' }
+    { prefix: 'monster-trait', key: 'traits', mode: 'repeater', label: 'Trait', containerId: 'monster-traits-repeater', addButtonId: 'monster-traits-add-btn', emptyText: 'No traits added yet.', cardLayout: true, cardTagLabel: 'Trait', supportsNotation: true },
+    { prefix: 'monster-action', key: 'actions', mode: 'repeater', label: 'Action', containerId: 'monster-actions-repeater', addButtonId: 'monster-actions-add-btn', emptyText: 'No actions added yet.', hasAttackMeta: true, cardLayout: true, supportsNotation: true, addButtons: [{ id: 'monster-actions-add-attack-btn', kind: 'attack' }, { id: 'monster-actions-add-btn', kind: 'feature' }] },
+    { prefix: 'monster-bonusaction', key: 'bonus_actions', mode: 'repeater', label: 'Bonus Action', containerId: 'monster-bonusactions-repeater', addButtonId: 'monster-bonusactions-add-btn', emptyText: 'No bonus actions added yet.', hasAttackMeta: true, cardLayout: true, supportsNotation: true, addButtons: [{ id: 'monster-bonusactions-add-attack-btn', kind: 'attack' }, { id: 'monster-bonusactions-add-btn', kind: 'feature' }] },
+    { prefix: 'monster-reaction', key: 'reactions', mode: 'repeater', label: 'Reaction', containerId: 'monster-reactions-repeater', addButtonId: 'monster-reactions-add-btn', emptyText: 'No reactions added yet.', hasTriggerField: true, cardLayout: true, cardTagLabel: 'Reaction', supportsNotation: true },
+    { prefix: 'monster-legendary', key: 'legendary_actions', mode: 'repeater', label: 'Legendary Action', containerId: 'monster-legendary-repeater', addButtonId: 'monster-legendary-add-btn', emptyText: 'No legendary actions added yet.', cardLayout: true, cardTagLabel: 'Legendary', hasCostField: true, supportsNotation: true },
+    { prefix: 'item-feature', key: 'item_features', mode: 'repeater', label: 'Benefit', containerId: 'item-features-repeater', addButtonId: 'item-features-add-btn', emptyText: 'No benefits added yet.', cardLayout: true, cardTagLabel: 'Benefit', supportsNotation: true }
 ];
 
 var ui_monster_entry_active_indices = {};
@@ -2121,7 +2121,7 @@ function ui_monster_entry_card_tag_label(group, entryKind) {
 }
 
 function ui_monster_action_notation_toolbar_html(group) {
-    if (!group || group.key !== 'actions') return '';
+    if (!group || !group.supportsNotation) return '';
     return '' +
         '    <div class="monster-notation-toolbar" aria-label="Insert notation">' +
         '      <span class="monster-notation-toolbar-label">Insert:</span>' +
@@ -3099,7 +3099,7 @@ function ui_monster_form_init() {
         });
         $('#' + g.containerId)
             .on('click', '.monster-notation-token', function (event) {
-                if (g.key !== 'actions') return;
+                if (!g.supportsNotation) return;
                 event.preventDefault();
                 event.stopPropagation();
                 var textarea = $(this).closest('.monster-entry-row').find('.monster-entry-repeater-text').get(0);
@@ -3110,7 +3110,7 @@ function ui_monster_form_init() {
                 $(textarea).trigger('input');
             })
             .on('dragstart', '.monster-notation-token', function (event) {
-                if (g.key !== 'actions') return;
+                if (!g.supportsNotation) return;
                 event.stopImmediatePropagation();
                 var originalEvent = event.originalEvent;
                 var notation = String($(this).attr('data-notation') || '');
@@ -3125,7 +3125,7 @@ function ui_monster_form_init() {
                 $(this).removeClass('is-dragging');
             })
             .on('dragover', '.monster-entry-repeater-text', function (event) {
-                if (g.key !== 'actions') return;
+                if (!g.supportsNotation) return;
                 var originalEvent = event.originalEvent;
                 var dataTransfer = originalEvent && originalEvent.dataTransfer;
                 var types = dataTransfer && dataTransfer.types ? Array.from(dataTransfer.types) : [];
@@ -3139,7 +3139,7 @@ function ui_monster_form_init() {
                 $(this).removeClass('is-notation-drop-target');
             })
             .on('drop', '.monster-entry-repeater-text', function (event) {
-                if (g.key !== 'actions') return;
+                if (!g.supportsNotation) return;
                 var originalEvent = event.originalEvent;
                 var dataTransfer = originalEvent && originalEvent.dataTransfer;
                 var notation = dataTransfer ? dataTransfer.getData('application/x-morvold-notation') : '';
