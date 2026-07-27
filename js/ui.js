@@ -1875,9 +1875,164 @@ function ui_sync_npc_class_controls(card) {
     ui_sync_npc_subclass_affix_controls('');
 }
 
+var ITEM_HIERARCHY_CATEGORIES = {
+    'Armor': ['Light', 'Medium', 'Heavy', 'Shield'],
+    'Weapon': ['Simple', 'Martial', 'Firearm', 'Ammunition'],
+    'Consumable': ['Potion', 'Poison', 'Scroll', 'Food and Drink', 'Explosive'],
+    'Magic Item': ['Ring', 'Rod', 'Staff', 'Wand', 'Wondrous Item', 'Tattoo', 'Generic Variant'],
+    'Equipment': ['Adventuring Gear', "Artisan's Tools", 'Gaming Set', 'Instrument', 'Spellcasting Focus', 'Tack and Harness', 'Tool'],
+    'Vehicle or Mount': ['Mount', 'Vehicle', 'Land', 'Water', 'Air', 'Space'],
+    'Treasure or Trade': ['Coinage', 'Gemstone', 'Art Object', 'Trade Good', 'Trade Bar']
+};
+
+var ITEM_HIERARCHY_CATEGORY_LABELS = {
+    'Armor': 'Armor Class',
+    'Weapon': 'Weapon Class',
+    'Consumable': 'Consumable Type',
+    'Magic Item': 'Magic Item Type',
+    'Equipment': 'Equipment Category',
+    'Vehicle or Mount': 'Vehicle Type',
+    'Treasure or Trade': 'Treasure Type'
+};
+
+var ITEM_ARMOR_SUBTYPES = {
+    'Light': ['Padded', 'Leather', 'Studded Leather'],
+    'Medium': ['Hide', 'Chain Shirt', 'Scale Mail', 'Breastplate', 'Half Plate', 'Spiked Armor'],
+    'Heavy': ['Ring Mail', 'Chain Mail', 'Splint', 'Plate'],
+    'Shield': ['Shield']
+};
+
+var ITEM_WEAPON_SUBTYPES = {
+    'Simple|Melee': ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Javelin', 'Light Hammer', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'],
+    'Simple|Ranged': ['Light Crossbow', 'Dart', 'Shortbow', 'Sling'],
+    'Martial|Melee': ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'War Pick', 'Warhammer', 'Whip'],
+    'Martial|Ranged': ['Blowgun', 'Hand Crossbow', 'Heavy Crossbow', 'Longbow', 'Net'],
+    'Firearm|Renaissance': ['Pistol', 'Musket'],
+    'Firearm|Modern': ['Automatic Pistol', 'Automatic Rifle', 'Hunting Rifle', 'Revolver', 'Shotgun'],
+    'Firearm|Futuristic': ['Antimatter Rifle', 'Laser Pistol', 'Laser Rifle'],
+    'Ammunition|': ['Arrow', 'Blowgun Needle', 'Crossbow Bolt', 'Sling Bullet', 'Bullet', 'Energy Cell']
+};
+
+function ui_item_hierarchy_select_options(selectId, options, currentValue) {
+    var select = document.getElementById(selectId);
+    if (!select) return;
+    var values = Array.isArray(options) ? options.slice() : [];
+    if (currentValue && values.indexOf(currentValue) === -1) values.push(currentValue);
+    select.innerHTML = '';
+    var empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '\u2014';
+    select.appendChild(empty);
+    values.forEach(function (value) {
+        var option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+    });
+    select.value = currentValue || '';
+}
+
+function ui_item_hierarchy_detail_config(type, category) {
+    if (type !== 'Weapon') return { label: '', options: [] };
+    if (category === 'Firearm') return { label: 'Firearm Era', options: ['Renaissance', 'Modern', 'Futuristic'] };
+    if (category === 'Simple' || category === 'Martial' || !category) {
+        return { label: 'Weapon Form', options: ['Melee', 'Ranged'] };
+    }
+    return { label: '', options: [] };
+}
+
+function ui_item_hierarchy_subtype_config(type, category, detail) {
+    var label = 'Specific Subtype';
+    var placeholder = 'Optional specific subtype';
+    var options = [];
+    if (type === 'Armor') {
+        label = 'Armor Subtype';
+        placeholder = 'e.g. Leather, Half Plate, Plate';
+        options = ITEM_ARMOR_SUBTYPES[category] || [];
+    } else if (type === 'Weapon') {
+        label = 'Weapon Subtype';
+        placeholder = 'e.g. Dagger, Longsword, Longbow';
+        options = ITEM_WEAPON_SUBTYPES[(category || '') + '|' + (detail || '')] || [];
+        if (!options.length && (category === 'Simple' || category === 'Martial')) {
+            options = (ITEM_WEAPON_SUBTYPES[category + '|Melee'] || []).concat(ITEM_WEAPON_SUBTYPES[category + '|Ranged'] || []);
+        }
+    } else if (type === 'Consumable' && category === 'Poison') {
+        label = 'Poison Type';
+        placeholder = 'e.g. Contact, Ingested, Inhaled, Injury';
+        options = ['Contact', 'Ingested', 'Inhaled', 'Injury'];
+    } else if (type === 'Equipment' && category === 'Spellcasting Focus') {
+        label = 'Focus Type';
+        placeholder = 'e.g. Arcane Focus, Druidic Focus, Holy Symbol';
+        options = ['Arcane Focus', 'Druidic Focus', 'Holy Symbol'];
+    } else if (type === 'Equipment' && category === 'Instrument') {
+        label = 'Instrument Type';
+        placeholder = 'e.g. Flute, Lute, Lyre';
+        options = ['Bagpipes', 'Drum', 'Dulcimer', 'Flute', 'Horn', 'Lute', 'Lyre', 'Pan Flute', 'Shawm', 'Viol'];
+    } else if (type === 'Other') {
+        label = 'Subtype';
+        placeholder = 'Optional refinement';
+    }
+    return { label: label, placeholder: placeholder, options: options };
+}
+
+function ui_sync_item_hierarchy_controls(card) {
+    if (card && typeof item_hierarchy_normalize_card === 'function') item_hierarchy_normalize_card(card);
+    var type = card ? String(card.item_type || '') : String($('#item-type').val() || '');
+    var category = card ? String(card.item_category || '') : String($('#item-category').val() || '');
+    var detail = card ? String(card.item_type_detail || '') : String($('#item-type-detail').val() || '');
+    var categoryOptions = ITEM_HIERARCHY_CATEGORIES[type] || [];
+    var detailConfig = ui_item_hierarchy_detail_config(type, category);
+    var subtypeConfig = ui_item_hierarchy_subtype_config(type, category, detail);
+
+    ui_item_hierarchy_select_options('item-category', categoryOptions, category);
+    ui_item_hierarchy_select_options('item-type-detail', detailConfig.options, detail);
+    $('#item-category-label').text(ITEM_HIERARCHY_CATEGORY_LABELS[type] || 'Category');
+    $('#item-type-detail-label').text(detailConfig.label || 'Classification');
+    $('#item-category-group').toggle(categoryOptions.length > 0);
+    $('#item-type-detail-group').toggle(detailConfig.options.length > 0);
+    $('#item-custom-type-group').toggle(type === 'Other');
+    $('#item-subtype-group').toggle(!!type);
+    $('#item-subtype-label').text(subtypeConfig.label);
+    $('#item-subtype').attr('placeholder', subtypeConfig.placeholder);
+
+    var datalist = document.getElementById('item-subtype-options');
+    if (datalist) {
+        datalist.innerHTML = '';
+        subtypeConfig.options.forEach(function (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            datalist.appendChild(option);
+        });
+    }
+}
+
+function ui_item_hierarchy_changed(level) {
+    var card = ui_selected_card();
+    if (!card) return;
+    if (level === 'type') {
+        card.item_category = '';
+        card.item_type_detail = '';
+        card.item_custom_type = '';
+        card.item_subtype = '';
+        $('#item-category, #item-type-detail, #item-custom-type, #item-subtype').val('');
+    } else if (level === 'category') {
+        card.item_type_detail = '';
+        card.item_subtype = '';
+        $('#item-type-detail, #item-subtype').val('');
+    } else if (level === 'detail') {
+        card.item_subtype = '';
+        $('#item-subtype').val('');
+    }
+    ui_sync_item_hierarchy_controls(card);
+    ui_render_selected_card();
+    if (typeof updateSectionCounters === 'function') updateSectionCounters();
+    local_store_save();
+}
+
 function ui_update_selected_card() {
     var card = ui_selected_card();
     if (card) {
+        ui_sync_item_hierarchy_controls(card);
         getFieldGroup('card').forEach(field => {
             var nextValue = field.id === 'card-template' ? ui_card_template(card) : field.getData();
             if (window.PERF_SAFE_UPDATES?.silentCardSwitchFieldSync && typeof field.syncValue === 'function') {
@@ -1940,6 +2095,7 @@ function ui_update_selected_card() {
             window.ui_sync_card_template_segmented();
         }
         ui_sync_npc_class_controls(null);
+        ui_sync_item_hierarchy_controls(null);
         for (var rj = 1; rj <= 5; rj++) {
             $('#monster-related-' + rj + '-type').val('');
             $('#monster-related-' + rj + '-name').val('');
@@ -2042,16 +2198,62 @@ function ui_build_saving_throw_group(containerId) {
     }
 }
 
+function ui_unique_language_values(values) {
+    var seen = Object.create(null);
+    return (Array.isArray(values) ? values : []).map(function (value) {
+        return String(value || '').trim();
+    }).filter(function (value) {
+        if (!value) return false;
+        var key = value.toLowerCase();
+        if (seen[key]) return false;
+        seen[key] = true;
+        return true;
+    });
+}
+
+function ui_parse_custom_languages(value) {
+    return ui_unique_language_values(String(value || '').split(/[,\n]+/));
+}
+
+function ui_known_language_lookup() {
+    var lookup = Object.create(null);
+    (typeof LANGUAGES_LIST !== 'undefined' && Array.isArray(LANGUAGES_LIST) ? LANGUAGES_LIST : []).forEach(function (language) {
+        lookup[String(language || '').toLowerCase()] = true;
+    });
+    return lookup;
+}
+
+function ui_language_custom_input_id(cardKey) {
+    return cardKey === 'item_sentient_languages' ? 'item-sentient-languages-custom' : 'monster-languages-custom';
+}
+
 function ui_sync_monster_checkboxes_from_card(card) {
     function syncGroup(containerId, cardKey) {
         var container = document.getElementById(containerId);
         if (!container) return;
         var arr = (card && card[cardKey]) ? card[cardKey] : [];
         if (!Array.isArray(arr)) arr = [];
+        var selectedLanguageLookup = Object.create(null);
+        if (cardKey === 'languages' || cardKey === 'item_sentient_languages') {
+            arr.forEach(function (language) {
+                selectedLanguageLookup[String(language || '').trim().toLowerCase()] = true;
+            });
+        }
         var checkboxes = container.querySelectorAll('input[type="checkbox"][data-monster-array="' + cardKey + '"]');
         checkboxes.forEach(function (cb) {
-            cb.checked = arr.indexOf(cb.value) !== -1;
+            cb.checked = cardKey === 'languages' || cardKey === 'item_sentient_languages'
+                ? !!selectedLanguageLookup[String(cb.value || '').toLowerCase()]
+                : arr.indexOf(cb.value) !== -1;
         });
+    }
+    function syncCustomLanguages(cardKey) {
+        var input = document.getElementById(ui_language_custom_input_id(cardKey));
+        if (!input) return;
+        var arr = card && Array.isArray(card[cardKey]) ? card[cardKey] : [];
+        var known = ui_known_language_lookup();
+        input.value = ui_unique_language_values(arr).filter(function (language) {
+            return !known[language.toLowerCase()];
+        }).join(', ');
     }
     syncGroup('monster-damage-resistances-cb', 'damage_resistances');
     syncGroup('monster-damage-immunities-cb', 'damage_immunities');
@@ -2062,6 +2264,8 @@ function ui_sync_monster_checkboxes_from_card(card) {
     syncGroup('monster-languages-exotic-cb', 'languages');
     syncGroup('item-sentient-languages-standard-cb', 'item_sentient_languages');
     syncGroup('item-sentient-languages-exotic-cb', 'item_sentient_languages');
+    syncCustomLanguages('languages');
+    syncCustomLanguages('item_sentient_languages');
     syncGroup('item-properties-cb', 'item_properties');
     syncGroup('item-focus-cb', 'item_focus_classes');
 }
@@ -2724,7 +2928,7 @@ function ui_monster_checkbox_change(containerId, cardKey) {
     if (!card) return;
     var arr = [];
     if (cardKey === 'languages' || cardKey === 'item_sentient_languages') {
-        // Languages: merge both Standard and Exotic so the card shows all selected languages.
+        // Merge Standard, Exotic, and custom entries into one canonical language list.
         var languageContainers = cardKey === 'item_sentient_languages'
             ? ['item-sentient-languages-standard-cb', 'item-sentient-languages-exotic-cb']
             : ['monster-languages-standard-cb', 'monster-languages-exotic-cb'];
@@ -2736,6 +2940,9 @@ function ui_monster_checkbox_change(containerId, cardKey) {
                 if (cb.checked) arr.push(cb.value);
             });
         });
+        var customInput = document.getElementById(ui_language_custom_input_id(cardKey));
+        if (customInput) arr = arr.concat(ui_parse_custom_languages(customInput.value));
+        arr = ui_unique_language_values(arr);
     } else {
         var container = document.getElementById(containerId);
         if (!container) return;
@@ -2788,6 +2995,14 @@ function ui_monster_form_init() {
     bindCheckboxGroup('monster-languages-exotic-cb', 'languages');
     bindCheckboxGroup('item-sentient-languages-standard-cb', 'item_sentient_languages');
     bindCheckboxGroup('item-sentient-languages-exotic-cb', 'item_sentient_languages');
+    function bindCustomLanguages(inputId, cardKey) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', function () { ui_monster_checkbox_change('', cardKey); });
+        input.addEventListener('change', function () { ui_monster_checkbox_change('', cardKey); });
+    }
+    bindCustomLanguages('monster-languages-custom', 'languages');
+    bindCustomLanguages('item-sentient-languages-custom', 'item_sentient_languages');
     bindCheckboxGroup('item-properties-cb', 'item_properties');
     bindCheckboxGroup('item-focus-cb', 'item_focus_classes');
 
@@ -4880,7 +5095,7 @@ $(document).ready(function () {
             type: 'number_nonzero'
         },
         sectionLanguages: {
-            total: 20,
+            total: 22,
             type: 'language_checkboxes'
         },
         sectionActions: {
@@ -4908,9 +5123,8 @@ $(document).ready(function () {
             count: 5
         },
         sectionItemDetails: {
-            total: 6,
-            fields: ['item-type', 'item-subtype', 'item-rarity', 'item-cost', 'item-weight', 'item-attunement'],
-            type: 'text'
+            total: 5,
+            type: 'item_details'
         },
         sectionItemFeatures: {
             total: 2,
@@ -4929,11 +5143,12 @@ $(document).ready(function () {
             type: 'text'
         },
         sectionItemSentience: {
-            total: 14,
+            total: 16,
             fields: [
                 'item-sentient-alignment', 'item-sentient-int', 'item-sentient-wis', 'item-sentient-cha',
                 'item-sentient-blindsight', 'item-sentient-darkvision', 'item-sentient-tremorsense',
-                'item-sentient-truesight', 'item-sentient-hearing', 'item-sentient-text',
+                'item-sentient-truesight', 'item-sentient-hearing', 'item-sentient-languages-custom',
+                'item-sentient-telepathy-range', 'item-sentient-text',
                 'item-sentient-personality', 'item-sentient-quirk', 'item-sentient-flaw', 'item-sentient-goal'
             ],
             type: 'text'
@@ -5018,8 +5233,30 @@ $(document).ready(function () {
                 var allLangCb = [];
                 if (stdContainer) allLangCb = allLangCb.concat(Array.from(stdContainer.querySelectorAll('input[type="checkbox"]')));
                 if (exoContainer) allLangCb = allLangCb.concat(Array.from(exoContainer.querySelectorAll('input[type="checkbox"]')));
-                total = allLangCb.length || config.total;
+                total = (allLangCb.length || (config.total - 2)) + 2;
                 allLangCb.forEach(function(cb) { if (cb.checked) filled++; });
+                var customLanguages = document.getElementById('monster-languages-custom');
+                if (customLanguages && customLanguages.value.trim() !== '') filled++;
+                var telepathyRange = document.getElementById('monster-telepathy-range');
+                if (telepathyRange && Number(telepathyRange.value) > 0) filled++;
+                break;
+
+            case 'item_details':
+                var itemDetailFields = ['item-type', 'item-rarity', 'item-cost', 'item-weight', 'item-attunement'];
+                [
+                    ['item-category-group', 'item-category'],
+                    ['item-type-detail-group', 'item-type-detail'],
+                    ['item-custom-type-group', 'item-custom-type'],
+                    ['item-subtype-group', 'item-subtype']
+                ].forEach(function (pair) {
+                    var group = document.getElementById(pair[0]);
+                    if (group && group.style.display !== 'none') itemDetailFields.push(pair[1]);
+                });
+                total = itemDetailFields.length;
+                itemDetailFields.forEach(function (id) {
+                    var field = document.getElementById(id);
+                    if (field && String(field.value || '').trim() !== '') filled++;
+                });
                 break;
 
             case 'title_text_pairs':
@@ -5283,6 +5520,7 @@ $(document).ready(function () {
         }
     })();
 
+    ui_sync_item_hierarchy_controls(ui_selected_card());
     UI_FIELDS_CONFIGURATION_PREPARE.forEach((prepareGroupConfig, key) => {
         UI_FIELDS_CONFIGURATION.set(key, prepareGroupConfig());
     });

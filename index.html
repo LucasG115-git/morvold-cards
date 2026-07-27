@@ -53,9 +53,9 @@
     <script type="text/javascript" src="js/fields/fields_deck.js"></script>
     <script type="text/javascript" src="js/fields/fields_page.js"></script>
     <script type="text/javascript" src="js/fields/fields_default.js"></script>
-    <script type="text/javascript" src="js/fields/fields_card.js?v=npc31"></script>
+    <script type="text/javascript" src="js/fields/fields_card.js?v=npc36"></script>
     <script type="text/javascript" src="js/monster-icon-data.js"></script>
-    <script type="text/javascript" src="js/cards.js?v=npc32"></script>
+    <script type="text/javascript" src="js/cards.js?v=npc36"></script>
     <script type="text/javascript" src="js/monster-computed.js"></script>
     <script type="text/javascript" src="js/colors.js"></script>
     <script type="text/javascript" src="js/icons.js"></script>
@@ -64,13 +64,13 @@
     <script type="text/javascript" src="js/srd-items.js?v=npc31"></script>
     <script type="text/javascript" src="js/srd-items-data.js?v=npc31"></script>
     <script type="text/javascript" src="js/item-art-data.js?v=npc31"></script>
-    <script type="text/javascript" src="js/srd-import.js?v=npc31"></script>
-    <script type="text/javascript" src="js/srd-items-library.js?v=npc31"></script>
+    <script type="text/javascript" src="js/srd-import.js?v=npc35"></script>
+    <script type="text/javascript" src="js/srd-items-library.js?v=npc36"></script>
     <script type="text/javascript" src="js/jsonbuilder-import.js"></script>
     <script type="text/javascript" src="js/card-lightbox.js"></script>
-    <script type="text/javascript" defer src="js/ui.js?v=npc34"></script>
+    <script type="text/javascript" defer src="js/ui.js?v=npc36"></script>
     <script type="text/javascript" defer src="js/autocomplete.js?v=npc31"></script>
-    <script type="text/javascript" defer src="js/redesign-modules.js?v=npc31"></script>
+    <script type="text/javascript" defer src="js/redesign-modules.js?v=npc36"></script>
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap' rel='stylesheet'>
     <link href="fonts/game-icons.css" rel="stylesheet" />
@@ -567,57 +567,46 @@
                         <label for="item-type" class="col-sm-3 control-label">Item Type</label>
                         <div class="col-sm-9">
                             <select id="item-type" class="form-control">
-                                <option value="">—</option>
-                                <option>Adventuring Gear</option>
-                                <option>Ammunition</option>
-                                <option>Artisan's Tools</option>
-                                <option>Explosive</option>
-                                <option>Firearm</option>
-                                <option>Food and Drink</option>
-                                <option>Futuristic</option>
-                                <option>Gaming Set</option>
-                                <option>Generic Variant</option>
-                                <option>Heavy Armor</option>
-                                <option>Instrument</option>
-                                <option>Light Armor</option>
-                                <option>Martial Weapon</option>
-                                <option>Medium Armor</option>
-                                <option>Melee Weapon</option>
-                                <option>Modern</option>
-                                <option>Mount</option>
+                                <option value="">&mdash;</option>
+                                <option>Armor</option>
+                                <option>Weapon</option>
+                                <option>Consumable</option>
+                                <option>Magic Item</option>
+                                <option>Equipment</option>
+                                <option>Vehicle or Mount</option>
+                                <option>Treasure or Trade</option>
                                 <option>Other</option>
-                                <option>Poison</option>
-                                <option>Potion</option>
-                                <option>Ranged Weapon</option>
-                                <option>Renaissance</option>
-                                <option>Ring</option>
-                                <option>Rod</option>
-                                <option>Scroll</option>
-                                <option>Shield</option>
-                                <option>Simple Weapon</option>
-                                <option>Spellcasting Focus</option>
-                                <option>Staff</option>
-                                <option>Tack and Harness</option>
-                                <option>Tattoo</option>
-                                <option>Tool</option>
-                                <option>Trade Bar</option>
-                                <option>Trade Good</option>
-                                <option>Treasure (Art Object)</option>
-                                <option>Treasure (Coinage)</option>
-                                <option>Treasure (Gemstone)</option>
-                                <option>Vehicle (Air)</option>
-                                <option>Vehicle (Land)</option>
-                                <option>Vehicle (Space)</option>
-                                <option>Vehicle (Water)</option>
-                                <option>Wand</option>
-                                <option>Wondrous Item</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="item-subtype" class="col-sm-3 control-label">Item Subtype</label>
+                    <div class="form-group" id="item-category-group" style="display:none;">
+                        <label for="item-category" id="item-category-label" class="col-sm-3 control-label">Category</label>
                         <div class="col-sm-9">
-                            <input type="text" id="item-subtype" class="form-control" placeholder="e.g. Longsword, Dragonhide, Phoenix, Frost">
+                            <select id="item-category" class="form-control">
+                                <option value="">&mdash;</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-type-detail-group" style="display:none;">
+                        <label for="item-type-detail" id="item-type-detail-label" class="col-sm-3 control-label">Classification</label>
+                        <div class="col-sm-9">
+                            <select id="item-type-detail" class="form-control">
+                                <option value="">&mdash;</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-custom-type-group" style="display:none;">
+                        <label for="item-custom-type" class="col-sm-3 control-label">Custom Type</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-custom-type" class="form-control" placeholder="e.g. Relic, Contraption, Planar Device">
+                        </div>
+                    </div>
+                    <div class="form-group" id="item-subtype-group" style="display:none;">
+                        <label for="item-subtype" id="item-subtype-label" class="col-sm-3 control-label">Specific Subtype</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-subtype" class="form-control" list="item-subtype-options" placeholder="Optional specific subtype">
+                            <datalist id="item-subtype-options"></datalist>
+                            <p class="help-block" id="item-subtype-help" style="margin:4px 0 0;font-size:12px;">Choose a suggestion or enter a custom subtype.</p>
                         </div>
                     </div>
                     <div class="form-group" id="item-tier-group" style="display:none;">
@@ -863,6 +852,22 @@
                     <div class="form-group">
                         <label class="col-sm-12 control-label" style="text-align:left;">Exotic Languages</label>
                         <div id="item-sentient-languages-exotic-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-sentient-languages-custom" class="col-sm-3 control-label">Custom Languages</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="item-sentient-languages-custom" class="form-control" placeholder="e.g. Druidic, Thieves' Cant">
+                            <p class="help-block" style="margin:4px 0 0;font-size:12px;">Separate multiple custom languages with commas.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-sentient-telepathy-range" class="col-sm-3 control-label">Telepathy</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <input type="number" id="item-sentient-telepathy-range" class="form-control" min="0" step="5" placeholder="0">
+                                <span class="input-group-addon">ft.</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="item-sentient-text" class="col-sm-3 control-label">Additional Notes</label>
@@ -1606,6 +1611,22 @@
                     <div class="form-group">
                         <label class="col-sm-12 control-label" style="text-align:left;">Exotic Languages</label>
                         <div id="monster-languages-exotic-cb" class="col-sm-12 row" style="margin-left:0; margin-right:0;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-languages-custom" class="col-sm-3 control-label">Custom Languages</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="monster-languages-custom" class="form-control" placeholder="e.g. Druidic, Thieves' Cant">
+                            <p class="help-block" style="margin:4px 0 0;font-size:12px;">Separate multiple custom languages with commas.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-telepathy-range" class="col-sm-3 control-label">Telepathy</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <input type="number" id="monster-telepathy-range" class="form-control" min="0" step="5" placeholder="0">
+                                <span class="input-group-addon">ft.</span>
+                            </div>
+                        </div>
                     </div>
                         </div>
                     </div>

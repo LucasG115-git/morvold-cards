@@ -130,7 +130,8 @@
     }
 
     var SCALAR_FIELDS = [
-        'item_type', 'item_subtype', 'item_rarity', 'item_attunement', 'item_attunement_req',
+        'item_type', 'item_category', 'item_type_detail', 'item_custom_type', 'item_subtype',
+        'item_rarity', 'item_attunement', 'item_attunement_req',
         'item_damage_dice', 'item_damage_type', 'item_range_normal', 'item_range_long',
         'item_weight', 'item_cost', 'item_description'
     ];
@@ -160,6 +161,7 @@
         }
 
         card.template = 'item';
+        if (typeof item_hierarchy_normalize_card === 'function') item_hierarchy_normalize_card(card);
         card.sections = null;
         if (typeof card_default_sections === 'function') card.sections = card_default_sections(card);
 

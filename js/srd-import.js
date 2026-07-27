@@ -102,6 +102,7 @@
             'blindsight', 'darkvision', 'tremorsense', 'truesight'
         ];
         RESET_ZERO.forEach(function (f) { card[f] = 0; });
+        card.telepathy_range = '';
         card.hover          = false;
         card.wearing_shield = false;
         card.hp_override    = '';
@@ -128,7 +129,7 @@
             'challenge_rating', 'str', 'dex', 'con', 'int', 'wis', 'cha',
             'ac_type', 'custom_ac_override', 'hp_override', 'wearing_shield',
             'walk_speed', 'burrow_speed', 'climb_speed', 'fly_speed', 'swim_speed', 'hover',
-            'blindsight', 'darkvision', 'tremorsense', 'truesight',
+            'blindsight', 'darkvision', 'tremorsense', 'truesight', 'telepathy_range',
             'natural_armor_type', 'equipped_armor_type', 'unarmored_defense_type',
             'creature_artwork', 'creature_art_credit'
         ];

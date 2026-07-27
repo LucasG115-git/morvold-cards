@@ -95,6 +95,7 @@ function default_card_data() {
     tremorsense: '',
     truesight: '',
     languages: [],
+    telepathy_range: '',
     legendary_actions_per_round: '',
     // NPC fields
     npc_title: '',
@@ -120,10 +121,12 @@ function default_card_data() {
     related_cards: [],
     // Item fields
     item_type: '',
+    item_category: '',
+    item_type_detail: '',
+    item_custom_type: '',
     item_subtype: '',
     item_tier: '',
     item_rarity: '',
-    item_category: '',
     item_properties: [],
     item_attunement: '',
     item_attunement_req: '',
@@ -149,6 +152,7 @@ function default_card_data() {
     item_sentient_truesight: '',
     item_sentient_hearing: '',
     item_sentient_languages: [],
+    item_sentient_telepathy_range: '',
     item_sentient_personality: '',
     item_sentient_quirk: '',
     item_sentient_flaw: '',
@@ -157,6 +161,84 @@ function default_card_data() {
     item_features: [],
     item_flavour_text: ''
   }, skillDefaults);
+}
+
+var ITEM_TYPE_FAMILIES = [
+  'Armor',
+  'Weapon',
+  'Consumable',
+  'Magic Item',
+  'Equipment',
+  'Vehicle or Mount',
+  'Treasure or Trade',
+  'Other'
+];
+
+var ITEM_LEGACY_TYPE_MAP = {
+  'adventuring gear': { type: 'Equipment', category: 'Adventuring Gear' },
+  'ammunition': { type: 'Weapon', category: 'Ammunition' },
+  "artisan's tools": { type: 'Equipment', category: "Artisan's Tools" },
+  'explosive': { type: 'Consumable', category: 'Explosive' },
+  'firearm': { type: 'Weapon', category: 'Firearm' },
+  'food and drink': { type: 'Consumable', category: 'Food and Drink' },
+  'futuristic': { type: 'Weapon', category: 'Firearm', detail: 'Futuristic' },
+  'gaming set': { type: 'Equipment', category: 'Gaming Set' },
+  'generic variant': { type: 'Magic Item', category: 'Generic Variant' },
+  'heavy armor': { type: 'Armor', category: 'Heavy' },
+  'instrument': { type: 'Equipment', category: 'Instrument' },
+  'light armor': { type: 'Armor', category: 'Light' },
+  'martial weapon': { type: 'Weapon', category: 'Martial' },
+  'medium armor': { type: 'Armor', category: 'Medium' },
+  'melee weapon': { type: 'Weapon', detail: 'Melee' },
+  'modern': { type: 'Weapon', category: 'Firearm', detail: 'Modern' },
+  'mount': { type: 'Vehicle or Mount', category: 'Mount' },
+  'poison': { type: 'Consumable', category: 'Poison' },
+  'potion': { type: 'Consumable', category: 'Potion' },
+  'ranged weapon': { type: 'Weapon', detail: 'Ranged' },
+  'renaissance': { type: 'Weapon', category: 'Firearm', detail: 'Renaissance' },
+  'ring': { type: 'Magic Item', category: 'Ring' },
+  'rod': { type: 'Magic Item', category: 'Rod' },
+  'scroll': { type: 'Consumable', category: 'Scroll' },
+  'shield': { type: 'Armor', category: 'Shield' },
+  'simple weapon': { type: 'Weapon', category: 'Simple' },
+  'spellcasting focus': { type: 'Equipment', category: 'Spellcasting Focus' },
+  'staff': { type: 'Magic Item', category: 'Staff' },
+  'tack and harness': { type: 'Equipment', category: 'Tack and Harness' },
+  'tattoo': { type: 'Magic Item', category: 'Tattoo' },
+  'tool': { type: 'Equipment', category: 'Tool' },
+  'trade bar': { type: 'Treasure or Trade', category: 'Trade Bar' },
+  'trade good': { type: 'Treasure or Trade', category: 'Trade Good' },
+  'treasure (art object)': { type: 'Treasure or Trade', category: 'Art Object' },
+  'treasure (coinage)': { type: 'Treasure or Trade', category: 'Coinage' },
+  'treasure (gemstone)': { type: 'Treasure or Trade', category: 'Gemstone' },
+  'vehicle': { type: 'Vehicle or Mount', category: 'Vehicle' },
+  'vehicle (air)': { type: 'Vehicle or Mount', category: 'Air' },
+  'vehicle (land)': { type: 'Vehicle or Mount', category: 'Land' },
+  'vehicle (space)': { type: 'Vehicle or Mount', category: 'Space' },
+  'vehicle (water)': { type: 'Vehicle or Mount', category: 'Water' },
+  'wand': { type: 'Magic Item', category: 'Wand' },
+  'wondrous item': { type: 'Magic Item', category: 'Wondrous Item' }
+};
+
+/**
+ * Convert the former flat Item Type values into the cascading hierarchy.
+ * Unknown legacy values become a custom type so their original label is kept.
+ */
+function item_hierarchy_normalize_card(card) {
+  if (!card || typeof card !== 'object') return card;
+  var type = String(card.item_type || '').trim();
+  if (!type || ITEM_TYPE_FAMILIES.indexOf(type) !== -1) return card;
+
+  var legacy = ITEM_LEGACY_TYPE_MAP[type.toLowerCase()];
+  if (legacy) {
+    card.item_type = legacy.type;
+    if (!String(card.item_category || '').trim()) card.item_category = legacy.category || '';
+    if (!String(card.item_type_detail || '').trim()) card.item_type_detail = legacy.detail || '';
+  } else {
+    card.item_type = 'Other';
+    if (!String(card.item_custom_type || '').trim()) card.item_custom_type = type;
+  }
+  return card;
 }
 
 function card_init(card) {
@@ -272,6 +354,7 @@ function card_init(card) {
   if (base.template === 'monster' || !base.template) {
     base.template = (base.show_stat_block === true || base.show_stat_block === 'true') ? 'creature' : 'npc';
   }
+  item_hierarchy_normalize_card(base);
   base.sections = card_default_sections(base);
   if (base.template === 'item') {
     base.item_cursed = base.sections.curse === true;
@@ -350,7 +433,7 @@ function card_default_sections(card) {
     def('saving_throws', fallbackAll && arrHas(card.saving_throw_proficiencies));
     def('skills', fallbackAll && MONSTER_SKILL_IDS.some(function (id) { return card['skill_' + id] && card['skill_' + id] !== 'none'; }));
     def('senses', fallbackAll && anyHas([card.blindsight, card.darkvision, card.tremorsense, card.truesight]));
-    def('languages', fallbackAll && arrHas(card.languages));
+    def('languages', fallbackAll && (arrHas(card.languages) || has(card.telepathy_range)));
   };
 
   if (t === 'item') {
@@ -372,6 +455,7 @@ function card_default_sections(card) {
         card.item_sentient_tremorsense,
         card.item_sentient_truesight,
         card.item_sentient_hearing,
+        card.item_sentient_telepathy_range,
         card.item_sentient_personality,
         card.item_sentient_quirk,
         card.item_sentient_flaw,
@@ -1933,6 +2017,15 @@ function monster_appearance_section_html(text) {
 }
 
 /** Meta row + ability-score table + optional row (the D&D stat block). */
+function monster_languages_text(d) {
+  const languages = Array.isArray(d.languages)
+    ? d.languages.filter(function (language) { return String(language || '').trim(); })
+    : (d.languages ? String(d.languages).split(',').map(function (language) { return language.trim(); }).filter(Boolean) : []);
+  const telepathyRange = String(d.telepathy_range == null ? '' : d.telepathy_range).trim();
+  if (telepathyRange) languages.push('telepathy ' + telepathyRange + ' ft.');
+  return languages.join(', ');
+}
+
 function monster_stats_block_html(d) {
   const bgValue = monster_bg_image_value(d);
   const iconStyle = function (name) { return monster_label_icon_style(bgValue, name); };
@@ -2011,7 +2104,7 @@ function monster_stats_block_html(d) {
     { key: 'damage_vulnerabilities', section: 'vulnerabilities', label: 'Vuln.', icon: 'vulnerabilities', val: vulnArr.join(', ') },
     { key: 'condition_immunities', section: 'condition_immunities', label: 'Cond. Immune', icon: 'condition_immunities', val: condArr.join(', ') },
     { key: 'senses', section: 'senses', label: 'Senses', icon: 'senses', val: sensesDisplayStr, always: true },
-    { key: 'languages', section: 'languages', label: 'Languages', icon: 'languages', val: Array.isArray(d.languages) ? d.languages.join(', ') : (d.languages || '').trim() }
+    { key: 'languages', section: 'languages', label: 'Languages', icon: 'languages', val: monster_languages_text(d) }
   ];
   const optionalWithVal = optionalFields.filter(function (f) { return (f.val || '').trim() && (f.always || card_section_enabled(d, f.section)); });
   const optionalBoxes = optionalWithVal.map(function (f) {
@@ -2058,7 +2151,8 @@ function item_type_icon_asset(itemType) {
   if (type.indexOf('shield') !== -1 || type.indexOf('armor') !== -1) return 'assets/item-type-icons/shield.png';
   if (type.indexOf('potion') !== -1 || type.indexOf('poison') !== -1) return 'assets/item-type-icons/potion-poison.png';
   if (type.indexOf('wondrous') !== -1) return 'assets/item-type-icons/wondrous-item.png';
-  if (type.indexOf('ranged') !== -1 || type.indexOf('ammunition') !== -1 || type === 'modern' || type === 'renaissance') {
+  if (type.indexOf('ranged') !== -1 || type.indexOf('ammunition') !== -1 || type.indexOf('firearm') !== -1 ||
+      type.indexOf('modern') !== -1 || type.indexOf('renaissance') !== -1 || type.indexOf('futuristic') !== -1) {
     return 'assets/item-type-icons/ranged-weapon.png';
   }
   if (type.indexOf('weapon') !== -1 || type.indexOf('sword') !== -1 || type.indexOf('axe') !== -1) {
@@ -2069,7 +2163,7 @@ function item_type_icon_asset(itemType) {
 
 function item_corner_emblem_html(d) {
   const gemSrc = item_rarity_gem_asset(d.item_rarity);
-  const iconSrc = item_type_icon_asset(d.item_type);
+  const iconSrc = item_type_icon_asset(item_type_line(d));
   return '<div class="item-corner-emblem">' +
     '<img class="item-corner-emblem-gem" src="' + gemSrc + '" alt="">' +
     '<img class="item-corner-emblem-icon" src="' + iconSrc + '" alt="">' +
@@ -2103,13 +2197,48 @@ function card_front_artwork_style(d) {
   return 'background-image:' + underlay + ';background-size:cover;background-position:center;background-repeat:no-repeat;';
 }
 
-/** "Legendary · Wondrous Item (Major)" type line under the item name. */
+/** Conventional item classification line under the item name. */
 function item_type_line(d) {
   const type = (d.item_type || '').trim();
+  const category = (d.item_category || '').trim();
+  const detail = (d.item_type_detail || '').trim();
+  const customType = (d.item_custom_type || '').trim();
   const subtype = (d.item_subtype || '').trim();
-  let line = type;
-  if (type && subtype) line += ' (' + subtype + ')';
-  if (!type && subtype) line = subtype;
+  let line = '';
+
+  if (type === 'Armor') {
+    line = category === 'Shield' ? 'Shield' : (category ? category + ' Armor' : 'Armor');
+  } else if (type === 'Weapon') {
+    if (category === 'Simple' || category === 'Martial') {
+      line = [category, detail, 'Weapon'].filter(Boolean).join(' ');
+    } else if (category === 'Firearm') {
+      line = [detail, 'Firearm'].filter(Boolean).join(' ');
+    } else if (category === 'Ammunition') {
+      line = 'Ammunition';
+    } else {
+      line = detail ? detail + ' Weapon' : 'Weapon';
+    }
+  } else if (type === 'Consumable' || type === 'Magic Item' || type === 'Equipment') {
+    line = category || type;
+  } else if (type === 'Vehicle or Mount') {
+    if (category === 'Mount' || category === 'Vehicle') line = category;
+    else if (category) line = 'Vehicle (' + category + ')';
+    else line = type;
+  } else if (type === 'Treasure or Trade') {
+    if (category === 'Art Object' || category === 'Coinage' || category === 'Gemstone') {
+      line = 'Treasure (' + category + ')';
+    } else {
+      line = category || type;
+    }
+  } else if (type === 'Other') {
+    line = customType || 'Other';
+  } else {
+    // Pre-migration fallback for externally supplied card objects.
+    line = type;
+  }
+
+  if (line && subtype && line.toLowerCase() !== subtype.toLowerCase()) line += ' (' + subtype + ')';
+  if (!line && subtype) line = subtype;
   return line;
 }
 
@@ -2208,6 +2337,8 @@ function item_sentience_section_html(d) {
   if (sensesText) firstParagraph += ' It has ' + sensesText + '.';
 
   let secondParagraph = 'The weapon communicates telepathically with its wielder';
+  const telepathyRange = String(d.item_sentient_telepathy_range == null ? '' : d.item_sentient_telepathy_range).trim();
+  if (telepathyRange) secondParagraph += ' out to a range of ' + telepathyRange + ' feet';
   if (languages.length) {
     secondParagraph += ' and can speak, read, and understand ' + item_human_list(languages);
   }

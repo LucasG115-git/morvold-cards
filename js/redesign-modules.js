@@ -146,7 +146,8 @@
                     .filter(function (x) { return Number(x[1]) > 0; }).map(function (x) { return x[0] + ' ' + x[1]; });
                 return se.length ? se.join(', ') : 'None';
             }
-            case 'languages': return join(arr(card.languages)) || 'None';
+            case 'languages':
+                return join(arr(card.languages).concat(nonEmpty(card.telepathy_range) ? ['Telepathy ' + card.telepathy_range + ' ft.'] : [])) || 'None';
             case 'traits': return entries('traits');
             case 'actions': return entries('actions');
             case 'bonus_actions': return entries('bonus_actions');
@@ -154,7 +155,7 @@
             case 'legendary_actions': return entries('legendary_actions');
             case 'details':
                 return join([
-                    join([card.item_type, nonEmpty(card.item_subtype) ? '(' + card.item_subtype + ')' : '']),
+                    typeof item_type_line === 'function' ? item_type_line(card) : join([card.item_type, nonEmpty(card.item_subtype) ? '(' + card.item_subtype + ')' : '']),
                     nonEmpty(card.item_rarity) && card.item_rarity !== 'None' ? card.item_rarity : '',
                     card.item_cost
                 ]) || 'Not set';
@@ -177,7 +178,8 @@
                     card.item_sentient_alignment,
                     nonEmpty(card.item_sentient_int) ? ('INT ' + card.item_sentient_int) : '',
                     nonEmpty(card.item_sentient_wis) ? ('WIS ' + card.item_sentient_wis) : '',
-                    nonEmpty(card.item_sentient_cha) ? ('CHA ' + card.item_sentient_cha) : ''
+                    nonEmpty(card.item_sentient_cha) ? ('CHA ' + card.item_sentient_cha) : '',
+                    nonEmpty(card.item_sentient_telepathy_range) ? ('Telepathy ' + card.item_sentient_telepathy_range + ' ft.') : ''
                 ]) || 'Not set';
         }
         return '';

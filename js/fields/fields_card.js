@@ -149,6 +149,9 @@ UI_FIELDS_CONFIGURATION_PREPARE.set('card', () => [
     { id: 'monster-truesight', property: [ui_selected_card, 'truesight'], defaultProperty: [default_card_data, 'truesight'],
         events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]]
     },
+    { id: 'monster-telepathy-range', property: [ui_selected_card, 'telepathy_range'], defaultProperty: [default_card_data, 'telepathy_range'],
+        events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]]
+    },
     { id: 'monster-skill-acrobatics', property: [ui_selected_card, 'skill_acrobatics'], defaultProperty: [default_card_data, 'skill_acrobatics'], events: [['change', ui_render_selected_card]] },
     { id: 'monster-skill-animal_handling', property: [ui_selected_card, 'skill_animal_handling'], defaultProperty: [default_card_data, 'skill_animal_handling'], events: [['change', ui_render_selected_card]] },
     { id: 'monster-skill-arcana', property: [ui_selected_card, 'skill_arcana'], defaultProperty: [default_card_data, 'skill_arcana'], events: [['change', ui_render_selected_card]] },
@@ -206,7 +209,13 @@ UI_FIELDS_CONFIGURATION_PREPARE.set('card', () => [
 
     // Item fields
     { id: 'item-type', property: [ui_selected_card, 'item_type'], defaultProperty: [default_card_data, 'item_type'],
-        events: [['change', ui_render_selected_card]] },
+        events: [['change', function () { ui_item_hierarchy_changed('type'); }]] },
+    { id: 'item-category', property: [ui_selected_card, 'item_category'], defaultProperty: [default_card_data, 'item_category'],
+        events: [['change', function () { ui_item_hierarchy_changed('category'); }]] },
+    { id: 'item-type-detail', property: [ui_selected_card, 'item_type_detail'], defaultProperty: [default_card_data, 'item_type_detail'],
+        events: [['change', function () { ui_item_hierarchy_changed('detail'); }]] },
+    { id: 'item-custom-type', property: [ui_selected_card, 'item_custom_type'], defaultProperty: [default_card_data, 'item_custom_type'],
+        events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
     { id: 'item-subtype', property: [ui_selected_card, 'item_subtype'], defaultProperty: [default_card_data, 'item_subtype'],
         events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
     { id: 'item-tier', property: [ui_selected_card, 'item_tier'], defaultProperty: [default_card_data, 'item_tier'],
@@ -255,6 +264,8 @@ UI_FIELDS_CONFIGURATION_PREPARE.set('card', () => [
     { id: 'item-sentient-truesight', property: [ui_selected_card, 'item_sentient_truesight'], defaultProperty: [default_card_data, 'item_sentient_truesight'],
         events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
     { id: 'item-sentient-hearing', property: [ui_selected_card, 'item_sentient_hearing'], defaultProperty: [default_card_data, 'item_sentient_hearing'],
+        events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
+    { id: 'item-sentient-telepathy-range', property: [ui_selected_card, 'item_sentient_telepathy_range'], defaultProperty: [default_card_data, 'item_sentient_telepathy_range'],
         events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
     { id: 'item-sentient-personality', property: [ui_selected_card, 'item_sentient_personality'], defaultProperty: [default_card_data, 'item_sentient_personality'],
         events: [['input', ui_render_selected_card], ['change', ui_render_selected_card]] },
