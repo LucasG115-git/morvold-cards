@@ -2841,6 +2841,12 @@ function ui_monster_form_init() {
         }
     });
 
+    function ui_uploaded_artwork_is_png(file) {
+        var mimeType = String(file && file.type || '').toLowerCase();
+        var fileName = String(file && file.name || '');
+        return mimeType === 'image/png' || /\.png$/i.test(fileName);
+    }
+
     $('#monster-creature-artwork-file').on('change', function () {
         var file = this.files && this.files[0];
         if (!file) return;
@@ -2866,7 +2872,12 @@ function ui_monster_form_init() {
                 canvas.width = w;
                 canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                // JPEG has no alpha channel and turns transparent pixels black.
+                // Keep uploaded PNGs as PNGs so transparent artwork remains transparent;
+                // retain JPEG compression for all other uploaded formats.
+                var dataUrl = ui_uploaded_artwork_is_png(file)
+                    ? canvas.toDataURL('image/png')
+                    : canvas.toDataURL('image/jpeg', 0.92);
                 card.creature_artwork = dataUrl;
                 $('#monster-creature-artwork').val(dataUrl);
                 ui_recompute_art_gradient(card, function () { ui_render_selected_card(); });
